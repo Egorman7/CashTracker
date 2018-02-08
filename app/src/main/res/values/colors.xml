@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--#acfdff -->
+    <color name="colorPrimary">#dcfffc</color>
+    <color name="colorPrimaryDark">#000</color>
+    <color name="colorAccent">#31e3fd</color>
+    <color name="outcomeColor">#b40404</color>
+    <color name="incomeColor">#088a08</color>
+    <color name="balanceColor">#0404b4</color>
+    <color name="mainTextColor">#101010</color>
+    <color name="white">#fff</color>
+
+    <!-- category colors -->
+    <color name="cat_other_color">#777474</color>
+    <color name="cat_food_color">#E4B312</color>
+    <color name="cat_entertainment_color">#6ACB2A</color>
+    <color name="cat_transport_color">#2A80CB</color>
+    <color name="cat_salary_color">#09940E</color>
+</resources>

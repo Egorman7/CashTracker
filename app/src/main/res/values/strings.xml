@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Cash Tracker</string>
+    <string name="action_settings">Settings</string>
+    <string name="balance_text">Баланс:</string>
+    <string name="income_month_text">Доход:</string>
+    <string name="outcome_month_text">Расход:</string>
+    <string name="title_activity_diagram">Диаграмма</string>
+    <string name="title_activity_journal">Журнал</string>
+    <string name="journal_from">С: </string>
+    <string name="journal_to">По:</string>
+    <string name="title_activity_add">Добавить</string>
+    <string name="title_activity_add_v2">Изменить</string>
+    <string name="add_summ_text">Сумма</string>
+    <string name="add_date_text">Дата</string>
+    <string name="add_category_text">Категория:</string>
+    <string name="add_type_text">Тип:</string>
+    <string name="add_income_type">Доход</string>
+    <string name="add_outcome_type">Расход</string>
+    <string name="title_activity_category">Категории</string>
+    <string name="add_color_text">Цвет:</string>
+    <string name="create_category_hint">Имя категории</string>
+    <string name="title_activity_category_tabbed">CategoryTabbedActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+</resources>
