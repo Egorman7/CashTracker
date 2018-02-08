@@ -66,9 +66,6 @@ public class CategoryActivity extends AppCompatActivity {
                 final ImageView image = v.findViewById(R.id.cat_create_image);
                 final ColorSlider slider = v.findViewById(R.id.cat_create_color_slider);
                 slider.setGradient(mColors,255);
-                //Bitmap bm = Bitmap.createBitmap(image.getWidth(),image.getHeight(), Bitmap.Config.ARGB_8888);
-                //bm.eraseColor(slider.getSelectedColor());
-                //image.setImageBitmap(bm);
                 slider.setListener(new ColorSlider.OnColorSelectedListener() {
                     @Override
                     public void onColorChanged(int pos, int color) {
@@ -77,6 +74,10 @@ public class CategoryActivity extends AppCompatActivity {
                         image.setImageBitmap(bm);
                     }
                 });
+                Bitmap bm = Bitmap.createBitmap(20,20, Bitmap.Config.ARGB_8888);
+                bm.eraseColor(slider.getSelectedColor());
+                image.setScaleType(ImageView.ScaleType.FIT_XY);
+                image.setImageBitmap(bm);
                 new AlertDialog.Builder(CategoryActivity.this)
                         .setTitle("Создать категорию")
                         .setView(v)
@@ -98,6 +99,7 @@ public class CategoryActivity extends AppCompatActivity {
                                 dialogInterface.dismiss();
                             }
                         }).show();
+
             }
         });
         mRenewButton.setOnClickListener(new View.OnClickListener() {

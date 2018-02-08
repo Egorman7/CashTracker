@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--#acfdff -->
-    <color name="colorPrimary">#dcfffc</color>
+    <color name="colorPrimary">#E6E6E6</color>
     <color name="colorPrimaryDark">#000</color>
-    <color name="colorAccent">#31e3fd</color>
+    <color name="colorAccent">#848484</color>
     <color name="outcomeColor">#b40404</color>
     <color name="incomeColor">#088a08</color>
     <color name="balanceColor">#0404b4</color>
