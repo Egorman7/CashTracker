@@ -28,13 +28,12 @@
                 android:textSize="24sp"
                 android:textColor="@color/mainTextColor"
                 android:text="@string/title_activity_diagram"/>
-                <ImageButton
+                <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/diagram_renew"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/icon_renew"
                     android:tint="@color/colorAccent"
-                    android:background="?android:selectableItemBackgroundBorderless"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
