@@ -29,17 +29,6 @@
                     android:textSize="24sp"
                     android:textColor="@color/mainTextColor"
                     android:text="@string/title_activity_category"/>
-
-                <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/category_renew"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/icon_renew"
-                    android:tint="@color/colorAccent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="16dp"/>
             </android.support.constraint.ConstraintLayout>
         </android.support.v7.widget.Toolbar>
 
