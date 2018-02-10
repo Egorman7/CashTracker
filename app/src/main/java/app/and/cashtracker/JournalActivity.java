@@ -7,10 +7,11 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.util.Calendar;
@@ -20,7 +21,6 @@ import app.and.cashtracker.adapters.RecordsListCursorAdapter;
 import app.and.cashtracker.database.DBHelper;
 
 public class JournalActivity extends AppCompatActivity {
-    private ImageButton mDiagramButton;
     private Button mDateStartButton, mDateEndButton;
     private ListView mListView;
     private RecordsListCursorAdapter mAdapter;
@@ -39,34 +39,25 @@ public class JournalActivity extends AppCompatActivity {
 
     }
 
-    private void initializeView(){
-        mDiagramButton = findViewById(R.id.journal_diagram_button);
+    private void initializeView() {
         mDateStartButton = findViewById(R.id.journal_date_start_button);
         mDateEndButton = findViewById(R.id.journal_date_end_button);
         mListView = findViewById(R.id.journal_list_view);
     }
-    private void initializeData(){
+
+    private void initializeData() {
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_YEAR,-14);
+        cal.add(Calendar.DAY_OF_YEAR, -14);
         dateStart = cal.getTime();
         dateEnd = Calendar.getInstance().getTime();
         mDateStartButton.setText(DBHelper.SDF.format(dateStart));
         mDateEndButton.setText(DBHelper.SDF.format(dateEnd));
-        mAdapter = new RecordsListCursorAdapter(this,DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),
-                DBHelper.SDF.format(dateStart), DBHelper.SDF.format(dateEnd)), DBHelper.SDF.format(dateStart),DBHelper.SDF.format(dateEnd));
+        mAdapter = new RecordsListCursorAdapter(this, DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),
+                DBHelper.SDF.format(dateStart), DBHelper.SDF.format(dateEnd)), DBHelper.SDF.format(dateStart), DBHelper.SDF.format(dateEnd));
         mListView.setAdapter(mAdapter);
     }
-    private void initializeListeners(){
-        mDiagramButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(JournalActivity.this, DiagramActivity.class);
-                Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),view.getHeight(),Bitmap.Config.ARGB_8888);
-                bitmap.eraseColor(getResources().getColor(R.color.colorPrimary));
-                Bundle bundle = ActivityOptions.makeThumbnailScaleUpAnimation(view,bitmap,0,0).toBundle();
-                startActivity(intent,bundle);
-            }
-        });
+
+    private void initializeListeners() {
         mDateStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,13 +65,13 @@ public class JournalActivity extends AppCompatActivity {
                     @Override
                     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
                         Calendar cal = Calendar.getInstance();
-                        cal.set(datePicker.getYear(),datePicker.getMonth(),datePicker.getDayOfMonth());
+                        cal.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
                         Date date = cal.getTime();
-                        dateStart =date;
+                        dateStart = date;
                         mDateStartButton.setText(DBHelper.SDF.format(date));
                         updateAdapter();
                     }
-                }, Calendar.getInstance().get(Calendar.YEAR),Calendar.getInstance().get(Calendar.MONTH),Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+                }, Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
                 dpd.show();
             }
         });
@@ -91,19 +82,36 @@ public class JournalActivity extends AppCompatActivity {
                     @Override
                     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
                         Calendar cal = Calendar.getInstance();
-                        cal.set(datePicker.getYear(),datePicker.getMonth(),datePicker.getDayOfMonth());
+                        cal.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
                         Date date = cal.getTime();
-                        dateEnd =date;
+                        dateEnd = date;
                         mDateEndButton.setText(DBHelper.SDF.format(date));
                         updateAdapter();
                     }
-                }, Calendar.getInstance().get(Calendar.YEAR),Calendar.getInstance().get(Calendar.MONTH),Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+                }, Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
                 dpd.show();
             }
         });
     }
 
-    private void updateAdapter(){
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.journal_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        View view = findViewById(item.getItemId());
+        Intent intent = new Intent(JournalActivity.this, DiagramActivity.class);
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(getResources().getColor(R.color.colorPrimary));
+        Bundle bundle = ActivityOptions.makeThumbnailScaleUpAnimation(view, bitmap, 0, 0).toBundle();
+        startActivity(intent, bundle);
+        return true;
+    }
+
+    private void updateAdapter() {
         mAdapter.swapCursor(DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),
                 DBHelper.SDF.format(dateStart), DBHelper.SDF.format(dateEnd)));
     }

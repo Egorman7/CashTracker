@@ -20,6 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:srcCompat="@android:drawable/ic_delete"
+        android:background="@android:color/background_light"
         android:tint="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="16dp"/>
