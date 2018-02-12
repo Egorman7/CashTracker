@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private CardView mCard;
 
     private String startDate, endDate;
-    private BroadcastReceiver mReciever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         initializeData();
         initializeListeners();
 
-        mReciever = new BroadcastReceiver() {
+        BroadcastReceiver mReciever = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 updateInfoCard();
@@ -118,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         bitmap.eraseColor(getResources().getColor(R.color.colorPrimary));
         Bundle bundle = ActivityOptions.makeThumbnailScaleUpAnimation(view, bitmap, 0, 0).toBundle();
         startActivityForResult(intent, 1, bundle);
+    }
     private void initializeListeners(){
         mCard.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
