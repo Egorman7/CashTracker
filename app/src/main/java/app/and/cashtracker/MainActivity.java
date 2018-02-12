@@ -3,8 +3,10 @@ package app.and.cashtracker;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -14,6 +16,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.View;
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView mListView;
     private RecordsListCursorAdapter mAdapter;
     private TextView mDates, mIncome, mOutcome, mValue;
+    private CardView mCard;
 
     private String startDate, endDate;
     private BroadcastReceiver mReciever;
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         mOutcome = findViewById(R.id.main_outcome);
         mValue = findViewById(R.id.main_balance);
         mListView = findViewById(R.id.main_list_view);
+        mCard = findViewById(R.id.main_card);
     }
     private void initializeData(){
         endDate = DBHelper.SDF.format(Calendar.getInstance().getTime());
@@ -108,6 +113,31 @@ public class MainActivity extends AppCompatActivity {
                 bitmap.eraseColor(getResources().getColor(R.color.colorPrimary));
                 Bundle bundle = ActivityOptions.makeThumbnailScaleUpAnimation(view,bitmap,0,0).toBundle();
                 startActivityForResult(intent,1,bundle);
+            }
+        });
+        mCard.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Обновление")
+                        .setMessage("Обновить данные?")
+                        .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if(DBHelper.updateCurrentValue(DBHelper.getInstance(MainActivity.this))){
+                                    updateInfoCard();
+                                }
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .show();
+                return true;
             }
         });
     }

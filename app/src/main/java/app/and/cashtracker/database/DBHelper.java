@@ -232,6 +232,7 @@ public class DBHelper extends SQLiteOpenHelper{
     }
 
 
+
     // get cursors
     public static Cursor getCategoriesCursor(DBHelper dbHelper, boolean income){
         String inc = income ? "1" : "0";
@@ -248,7 +249,7 @@ public class DBHelper extends SQLiteOpenHelper{
     public static Cursor getRecordsCursorByDates(DBHelper dbHelper, String dateStart, String dateEnd){
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("select * from " + TABLE_RECORDS + " where " + REC_DATE + " >= '" + dateStart +
-                "' and " + REC_DATE + " <= '" + dateEnd + "' order by " + REC_ID + " desc;",null);
+                "' and " + REC_DATE + " <= '" + dateEnd + "' order by " + REC_DATE + " desc;",null);
         return cursor;
     }
 
@@ -277,6 +278,29 @@ public class DBHelper extends SQLiteOpenHelper{
         cv.put(REC_CAT, catId);
         cv.put(REC_INCOME, rm.isIncome() ? 1 : 0);
         if(database.update(TABLE_RECORDS,cv,REC_ID + " = " + rm.getId(),null) > 0){
+            database.close();
+            return true;
+        }
+        database.close();
+        return false;
+    }
+    public static boolean updateCurrentValue(DBHelper dbHelper){
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        Cursor cursor = database.rawQuery("select "+ REC_VALUE + ", " + REC_INCOME +" from " + TABLE_RECORDS, null);
+        double res = 0;
+        if(cursor.moveToFirst()){
+            do{
+                double d = cursor.getDouble(cursor.getColumnIndexOrThrow(REC_VALUE));
+                if(cursor.getInt(cursor.getColumnIndexOrThrow(REC_INCOME))>0){
+                    res+=d;
+                } else res-=d;
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        ContentValues cv = new ContentValues();
+        cv.put(CUR_VALUE, res);
+        if(database.update(TABLE_CURRENT,cv,CUR_ID + " = 1", null) >0)
+        {
             database.close();
             return true;
         }

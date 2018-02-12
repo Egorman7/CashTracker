@@ -21,8 +21,13 @@
         android:layout_marginTop="16dp"/>
 
     <com.razerdp.widget.animatedpieview.AnimatedPieView
-        android:id="@+id/diagram_pie"
+        android:id="@+id/diagram_pie_outcome"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <com.razerdp.widget.animatedpieview.AnimatedPieView
+        android:id="@+id/diagram_pie_income"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
 </android.support.constraint.ConstraintLayout>

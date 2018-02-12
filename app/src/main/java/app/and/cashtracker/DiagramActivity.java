@@ -21,7 +21,7 @@ import java.util.Map;
 import app.and.cashtracker.database.DBHelper;
 
 public class DiagramActivity extends AppCompatActivity {
-    private AnimatedPieView mChart;
+    private AnimatedPieView mChartOutcome, mChartIncome;
     private ImageButton mButton;
     private TextView mTextView;
     private boolean isIncome;
@@ -51,16 +51,17 @@ public class DiagramActivity extends AppCompatActivity {
 
     private void initializeView(){
         mTextView = findViewById(R.id.diagram_info);
-        mChart = findViewById(R.id.diagram_pie);
+        mChartOutcome = findViewById(R.id.diagram_pie_outcome);
+        mChartIncome = findViewById(R.id.diagram_pie_income);
         mButton = findViewById(R.id.diagram_renew);
     }
     private void initializeIncomeConfig(){
         Map<String, Float> dataMap = DBHelper.getValuesForCategoriesByDates(DBHelper.getInstance(this),dateStart,dateEnd,true);
         configIncome = new AnimatedPieViewConfig();
-        String[] keys2 = dataMap.keySet().toArray(new String[dataMap.size()]);
-        for (int i=0; i<keys2.length; i++){
-            if(dataMap.get(keys2[i])>0){
-                configIncome.addData(new SimplePieInfo(dataMap.get(keys2[i]),DBHelper.getCategoryColor(DBHelper.getInstance(this),keys2[i]),keys2[i]));
+        String[] keys = dataMap.keySet().toArray(new String[dataMap.size()]);
+        for (int i=0; i<keys.length; i++){
+            if(dataMap.get(keys[i])>0){
+                configIncome.addData(new SimplePieInfo(dataMap.get(keys[i]),DBHelper.getCategoryColor(DBHelper.getInstance(this),keys[i]),keys[i]));
             }
         }
         configIncome.setStartAngle(-90);
@@ -87,7 +88,6 @@ public class DiagramActivity extends AppCompatActivity {
         configOutcome.setStartAngle(-90);
         configOutcome.setTextSize(32);
         configOutcome.setTextMarginLine(32);
-        //config.setDrawStrokeOnly(false);
         configOutcome.setDirectText(false);
         configOutcome.setFocusAlphaType(AnimatedPieViewConfig.FOCUS_WITH_ALPHA, 150);
         configOutcome.setDuration(2000);
@@ -99,8 +99,9 @@ public class DiagramActivity extends AppCompatActivity {
         });
     }
     private void initializeData(){
-        mChart.applyConfig(configOutcome);
-        mChart.start();
+        mChartOutcome.applyConfig(configOutcome);
+        mChartOutcome.start();
+        mChartIncome.applyConfig(configIncome);
         mTextView.setText("Расходы (" + dateStart + " - " + dateEnd+")");
     }
     private void initializeListeners(){
@@ -110,12 +111,18 @@ public class DiagramActivity extends AppCompatActivity {
                 isIncome = !isIncome;
                 if(isIncome){
                     mTextView.setText("Доходы (" + dateStart + " - " + dateEnd+")");
-                    mChart.applyConfig(configIncome);
+                    //mChartOutcome.applyConfig(configIncome);
+                    mChartOutcome.setVisibility(View.GONE);
+                    mChartIncome.setVisibility(View.VISIBLE);
+                    mChartIncome.start();
                 } else {
                     mTextView.setText("Расходы (" + dateStart + " - " + dateEnd+")");
-                    mChart.applyConfig(configOutcome);
+                    mChartIncome.setVisibility(View.GONE);
+                    mChartOutcome.setVisibility(View.VISIBLE);
+                    mChartOutcome.start();
+                    //mChartOutcome.applyConfig(configOutcome);
                 }
-                mChart.start();
+                //mChartOutcome.start();
             }
         });
     }

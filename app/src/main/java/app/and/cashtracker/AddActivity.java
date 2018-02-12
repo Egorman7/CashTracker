@@ -57,13 +57,13 @@ public class AddActivity extends AppCompatActivity {
             mButton.setText("Изменить");
             mValue.setText(String.valueOf(val));
             mDate.setText(date);
-            mCategorySpinner.setSelection(mAdapter.getPosition(cat));
             oldValue = val;
             isWasIncome = getIntent().getBooleanExtra("income",false);
             if(isWasIncome){
                 isIncome = true;
                 mRadioInc.setChecked(true);
             }
+            mCategorySpinner.setSelection(mAdapter.getPosition(cat));
         }
     }
 
