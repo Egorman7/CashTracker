@@ -249,7 +249,7 @@ public class DBHelper extends SQLiteOpenHelper{
     public static Cursor getRecordsCursorByDates(DBHelper dbHelper, String dateStart, String dateEnd){
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("select * from " + TABLE_RECORDS + " where " + REC_DATE + " >= '" + dateStart +
-                "' and " + REC_DATE + " <= '" + dateEnd + "' order by " + REC_DATE + " desc;",null);
+                "' and " + REC_DATE + " <= '" + dateEnd + "' order by " + REC_DATE + " desc, " + REC_ID + " desc;",null);
         return cursor;
     }
 
