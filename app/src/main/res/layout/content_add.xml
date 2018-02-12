@@ -100,13 +100,13 @@
             android:layout_marginEnd="64dp"
             android:layout_marginStart="8dp"/>
 
-        <ImageButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/add_category_config_button"
             android:layout_width="32dp"
             android:layout_height="32dp"
             app:srcCompat="@drawable/icon_settings"
             android:scaleType="fitXY"
-            android:background="?android:selectableItemBackgroundBorderless"
+            android:background="@android:color/background_light"
             app:layout_constraintStart_toEndOf="@id/add_category_spinner"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="8dp"
