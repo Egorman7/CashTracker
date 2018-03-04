@@ -151,6 +151,20 @@ public class DBHelper extends SQLiteOpenHelper{
         cursor.close();
         return res;
     }
+    public static Map<Integer, String> getCategoriesList(DBHelper dbHelper, boolean income){
+        String inc = income ? "1" : "0";
+        Map<Integer, String> map = new HashMap<>();
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("select " + CAT_NAME +", "+CAT_ID+" from " + TABLE_CATEGORY + " where " + CAT_INCOME + " = " + inc, null);
+        if(cursor.moveToFirst()){
+            do{
+                map.put(cursor.getInt(cursor.getColumnIndexOrThrow(CAT_ID)),cursor.getString(cursor.getColumnIndexOrThrow(CAT_NAME)));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        database.close();
+        return map;
+    }
     public static double getValuesSumForDates(DBHelper dbHelper, String dateStart, String dateEnd, boolean income){
         String inc = ((income) ? "1" : "0");
         SQLiteDatabase database = dbHelper.getReadableDatabase();
@@ -177,6 +191,25 @@ public class DBHelper extends SQLiteOpenHelper{
         cursor.close();
         return res;
     }
+
+    public static Map<String, Float> getValuesForCat(DBHelper dbHelper, String dateStart, String dateEnd, boolean income){
+        String inc = income ? "1" : "0";
+        Map<Integer, String> categories = getCategoriesList(dbHelper,income);
+        Map<String, Float> map = new HashMap<>();
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("select " + REC_CAT + ", sum("+REC_VALUE+") as sum from " + TABLE_RECORDS + " where " +
+            REC_INCOME + " = " + inc + " and " + REC_DATE + " >= '" + dateStart + "' and " + REC_DATE + " <= '" + dateEnd + "' group by " + REC_CAT + " order by sum asc;", null);
+        if(cursor.moveToFirst()){
+            do{
+                float value = (float)cursor.getDouble(cursor.getColumnIndexOrThrow("sum"));
+                map.put(categories.get(cursor.getInt(cursor.getColumnIndexOrThrow(REC_CAT))),value);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        database.close();
+        return map;
+    }
+
     public static Map<String, Float> getValuesForCategoriesByDates(DBHelper dbHelper, String dateStart, String dateEnd, boolean income){
         String inc = income ? "1" : "0";
         Map<String, Float> map = new HashMap<>();
@@ -186,7 +219,7 @@ public class DBHelper extends SQLiteOpenHelper{
             Float res = 0.0f;
             SQLiteDatabase database = dbHelper.getReadableDatabase();
             Cursor cursor = database.rawQuery("select * from " + TABLE_RECORDS + " where " + REC_CAT + " = " + catId + " and " + REC_INCOME + " = " + inc +
-                    " and " + REC_DATE + " >= '" + dateStart + "' and " + REC_DATE + " <= '" + dateEnd + "';", null);
+                    " and " + REC_DATE + " >= '" + dateStart + "' and " + REC_DATE + " <= '" + dateEnd + "' order by " + REC_VALUE + " asc;", null);
             if(cursor.moveToFirst()){
                 do{
                     float value = (float)cursor.getDouble(cursor.getColumnIndexOrThrow(REC_VALUE));

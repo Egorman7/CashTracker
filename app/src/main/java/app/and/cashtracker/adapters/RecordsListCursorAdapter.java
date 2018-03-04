@@ -20,6 +20,10 @@ import android.widget.CursorAdapter;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 import app.and.cashtracker.AddActivity;
 import app.and.cashtracker.R;
 import app.and.cashtracker.database.DBHelper;
@@ -50,7 +54,8 @@ public class RecordsListCursorAdapter extends CursorAdapter {
         final CardView cardView = view.findViewById(R.id.info_card);
         final int id = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.REC_ID));
         final double val = cursor.getDouble(cursor.getColumnIndexOrThrow(DBHelper.REC_VALUE));
-        final String value = String.valueOf(val),
+        DecimalFormat df = new DecimalFormat("#.00 UAH", DecimalFormatSymbols.getInstance(Locale.US));
+        final String value = df.format(val),
                 date = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.REC_DATE)),
                 cat = DBHelper.getCategoryById(DBHelper.getInstance(context),cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.REC_CAT)));
         final boolean income = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.REC_INCOME)) > 0;
