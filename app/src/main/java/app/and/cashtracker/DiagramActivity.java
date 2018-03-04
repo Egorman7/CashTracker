@@ -2,6 +2,8 @@ package app.and.cashtracker;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +35,7 @@ public class DiagramActivity extends AppCompatActivity {
     private TextView mTextView, mSumInfo, mCardText;
     private boolean isIncome, isCardShowing;
     private AnimatedPieViewConfig configOutcome, configIncome;
-    private String dateEnd, dateStart, selectedCat;
+    private String dateEnd, dateStart, selectedCat, selectedValue;
     private double valueInc, valueOut;
 
     @Override
@@ -91,7 +93,8 @@ public class DiagramActivity extends AppCompatActivity {
             public void onSelectPie(@NonNull IPieInfo pieInfo, boolean isScaleUp) {
                 //if(isScaleUp) Toast.makeText(getApplicationContext(),pieInfo.getDesc() + ": " + pieInfo.getValue() + " UAH", Toast.LENGTH_SHORT).show();
                 if(isScaleUp){
-                    selectedCat = pieInfo.getDesc()+": " + new DecimalFormat("#.00 UAH",DecimalFormatSymbols.getInstance(Locale.US)).format(pieInfo.getValue());
+                    selectedCat = pieInfo.getDesc();
+                    selectedValue = ": " + new DecimalFormat("#.00 UAH",DecimalFormatSymbols.getInstance(Locale.US)).format(pieInfo.getValue());
                     showCard();
                 } else hideCard();
             }
@@ -118,7 +121,8 @@ public class DiagramActivity extends AppCompatActivity {
             public void onSelectPie(@NonNull IPieInfo pieInfo, boolean isScaleUp) {
                 //if(isScaleUp) Toast.makeText(getApplicationContext(),pieInfo.getDesc() + ": " + pieInfo.getValue() + " UAH", Toast.LENGTH_SHORT).show();
                 if(isScaleUp){
-                    selectedCat = pieInfo.getDesc()+": " + new DecimalFormat("#.00 UAH",DecimalFormatSymbols.getInstance(Locale.US)).format(pieInfo.getValue());
+                    selectedCat = pieInfo.getDesc();
+                    selectedValue = ": " + new DecimalFormat("#.00 UAH",DecimalFormatSymbols.getInstance(Locale.US)).format(pieInfo.getValue());
                     showCard();
                 } else hideCard();
             }
@@ -138,7 +142,6 @@ public class DiagramActivity extends AppCompatActivity {
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 isIncome = !isIncome;
                 if(isIncome){
                     mTextView.setText("Доходы (" + dateStart + " - " + dateEnd+")");
@@ -156,6 +159,17 @@ public class DiagramActivity extends AppCompatActivity {
                     //mChartOutcome.applyConfig(configOutcome);
                 }
                 //mChartOutcome.start();
+            }
+        });
+        mCardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DiagramActivity.this, MoreActivity.class);
+                intent.putExtra("cat",selectedCat);
+                intent.putExtra("dateStart",dateStart);
+                intent.putExtra("dateEnd",dateEnd);
+                intent.putExtra("income",isIncome);
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(DiagramActivity.this,mCardText,"titlemore").toBundle());
             }
         });
     }
@@ -206,7 +220,7 @@ public class DiagramActivity extends AppCompatActivity {
     }
 
     private void updateCard(){
-        mCardText.setText(selectedCat);
+        mCardText.setText(selectedCat+selectedValue);
     }
 
     @Override

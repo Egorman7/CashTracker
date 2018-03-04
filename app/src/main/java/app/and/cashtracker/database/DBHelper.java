@@ -285,6 +285,14 @@ public class DBHelper extends SQLiteOpenHelper{
                 "' and " + REC_DATE + " <= '" + dateEnd + "' order by " + REC_DATE + " desc, " + REC_ID + " desc;",null);
         return cursor;
     }
+    public static Cursor getMoreCursor(DBHelper dbHelper, String dateStart, String dateEnd, boolean income, String category){
+        int id = getCategoryIdByName(dbHelper, category, income);
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("select " + REC_DATE +", "+REC_ID+", sum("+REC_VALUE+") as sum from " + TABLE_RECORDS +" where "+
+                REC_DATE +" >= '" + dateStart + "' and " + REC_DATE + " <= '" + dateEnd + "' and "+
+                REC_CAT + " = "+ id + " group by " + REC_DATE + " order by " + REC_DATE + " desc;", null);
+        return cursor;
+    }
 
     // update data
     private static void updateRecordsCategory(DBHelper dbHelper, int oldId, int newId){
