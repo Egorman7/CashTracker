@@ -28,8 +28,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 import app.and.cashtracker.adapters.RecordsListCursorAdapter;
 import app.and.cashtracker.database.DBHelper;
@@ -84,9 +87,10 @@ public class MainActivity extends AppCompatActivity {
         startDate = DBHelper.SDF.format(calendar.getTime());
         mDates.setText(startDate + "  -  " + endDate);
 
-        mIncome.setText(String.valueOf(DBHelper.getValuesSumForDates(DBHelper.getInstance(this),startDate, endDate, true)));
+        /*mIncome.setText(String.valueOf(DBHelper.getValuesSumForDates(DBHelper.getInstance(this),startDate, endDate, true)));
         mOutcome.setText("-"+String.valueOf(DBHelper.getValuesSumForDates(DBHelper.getInstance(this),startDate, endDate, false)));
-        mValue.setText(String.valueOf(DBHelper.getBalance(DBHelper.getInstance(this))));
+        mValue.setText(String.valueOf(DBHelper.getBalance(DBHelper.getInstance(this))));*/
+        updateInfoCard();
 
         mAdapter = new RecordsListCursorAdapter(this, DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),startDate, endDate),startDate,endDate);
         mListView.setAdapter(mAdapter);
@@ -143,9 +147,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateInfoCard(){
-        mValue.setText(String.valueOf(DBHelper.getBalance(DBHelper.getInstance(this))));
-        mIncome.setText(String.valueOf(DBHelper.getValuesSumForDates(DBHelper.getInstance(this),startDate, endDate, true)));
-        mOutcome.setText("-"+String.valueOf(DBHelper.getValuesSumForDates(DBHelper.getInstance(this),startDate, endDate, false)));
+        DecimalFormat df = new DecimalFormat("#.00 UAH", DecimalFormatSymbols.getInstance(Locale.US));
+        mValue.setText(df.format(DBHelper.getBalance(DBHelper.getInstance(this))));
+        mIncome.setText(df.format(DBHelper.getValuesSumForDates(DBHelper.getInstance(this),startDate, endDate, true)));
+        mOutcome.setText("-"+df.format(DBHelper.getValuesSumForDates(DBHelper.getInstance(this),startDate, endDate, false)));
     }
 
     @Override
