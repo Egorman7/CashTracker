@@ -10,6 +10,8 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -24,7 +26,6 @@ import app.and.cashtracker.database.DBHelper;
 public class CategoryActivity extends AppCompatActivity {
 
     private CategoryListCursorAdapter mAdapter;
-    private ImageButton mRenewButton;
     private ListView mListView;
     private boolean isIncomeCats;
     private FloatingActionButton mFab;
@@ -51,7 +52,6 @@ public class CategoryActivity extends AppCompatActivity {
     private void initializeView(){
         mFab = findViewById(R.id.fab);
         mListView = findViewById(R.id.category_list);
-        mRenewButton = findViewById(R.id.category_renew);
     }
     private void initializeData(){
         mAdapter = new CategoryListCursorAdapter(this,DBHelper.getCategoriesCursor(DBHelper.getInstance(this),isIncomeCats),isIncomeCats);
@@ -102,14 +102,29 @@ public class CategoryActivity extends AppCompatActivity {
 
             }
         });
-        mRenewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                isIncomeCats = !isIncomeCats;
-                mAdapter = new CategoryListCursorAdapter(CategoryActivity.this,DBHelper.getCategoriesCursor(DBHelper.getInstance(CategoryActivity.this),isIncomeCats),isIncomeCats);
-                mListView.setAdapter(mAdapter);
-            }
-        });
     }
 
+    private void onChangeItemClick(View view){
+        isIncomeCats = !isIncomeCats;
+        mAdapter = new CategoryListCursorAdapter(CategoryActivity.this,DBHelper.getCategoriesCursor(DBHelper.getInstance(CategoryActivity.this),isIncomeCats),isIncomeCats);
+        mListView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.categories_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        View view = findViewById(itemId);
+        switch (itemId){
+            case R.id.categories_change_item:
+                onChangeItemClick(view);
+                break;
+        }
+        return true;
+    }
 }

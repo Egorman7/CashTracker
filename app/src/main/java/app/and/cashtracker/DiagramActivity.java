@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -31,7 +33,7 @@ import app.and.cashtracker.database.DBHelper;
 public class DiagramActivity extends AppCompatActivity {
     private AnimatedPieView mChartOutcome, mChartIncome;
     private CardView mCard;
-    private ImageButton mButton, mCardButton;
+    private ImageButton /*mButton,*/ mCardButton;
     private TextView mTextView, mSumInfo, mCardText;
     private boolean isIncome, isCardShowing;
     private AnimatedPieViewConfig configOutcome, configIncome;
@@ -66,7 +68,6 @@ public class DiagramActivity extends AppCompatActivity {
         mSumInfo = findViewById(R.id.diagram_sum_info);
         mChartOutcome = findViewById(R.id.diagram_pie_outcome);
         mChartIncome = findViewById(R.id.diagram_pie_income);
-        mButton = findViewById(R.id.diagram_renew);
         mCard = findViewById(R.id.diagram_info_card);
         mCardText = findViewById(R.id.diagram_info_card_text);
         mCardButton = findViewById(R.id.diagram_info_card_button);
@@ -139,28 +140,6 @@ public class DiagramActivity extends AppCompatActivity {
         mSumInfo.animate().alpha(1f).setDuration(1200).setListener(null);
     }
     private void initializeListeners(){
-        mButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                isIncome = !isIncome;
-                if(isIncome){
-                    mTextView.setText("Доходы (" + dateStart + " - " + dateEnd+")");
-                    //mChartOutcome.applyConfig(configIncome);
-                    mChartOutcome.setVisibility(View.GONE);
-                    mChartIncome.setVisibility(View.VISIBLE);
-                    mChartIncome.start();
-                    fadeInOutSumLable(valueInc);
-                } else {
-                    mTextView.setText("Расходы (" + dateStart + " - " + dateEnd+")");
-                    mChartIncome.setVisibility(View.GONE);
-                    mChartOutcome.setVisibility(View.VISIBLE);
-                    mChartOutcome.start();
-                    fadeInOutSumLable(valueOut);
-                    //mChartOutcome.applyConfig(configOutcome);
-                }
-                //mChartOutcome.start();
-            }
-        });
         mCardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -190,7 +169,6 @@ public class DiagramActivity extends AppCompatActivity {
                     }
                 });
     }
-
     private void showCard(){
         if(isCardShowing){
             updateCard();
@@ -218,9 +196,44 @@ public class DiagramActivity extends AppCompatActivity {
                     });
         }
     }
-
     private void updateCard(){
         mCardText.setText(selectedCat+selectedValue);
+    }
+    private void onChangeItemClick(View view){
+        isIncome = !isIncome;
+        if(isIncome){
+            mTextView.setText("Доходы (" + dateStart + " - " + dateEnd+")");
+            //mChartOutcome.applyConfig(configIncome);
+            mChartOutcome.setVisibility(View.GONE);
+            mChartIncome.setVisibility(View.VISIBLE);
+            mChartIncome.start();
+            fadeInOutSumLable(valueInc);
+        } else {
+            mTextView.setText("Расходы (" + dateStart + " - " + dateEnd+")");
+            mChartIncome.setVisibility(View.GONE);
+            mChartOutcome.setVisibility(View.VISIBLE);
+            mChartOutcome.start();
+            fadeInOutSumLable(valueOut);
+            //mChartOutcome.applyConfig(configOutcome);
+        }
+        //mChartOutcome.start();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.diagram_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        View view = findViewById(itemId);
+        switch (itemId){
+            case R.id.diagram_menu_change_item:
+                onChangeItemClick(view);
+                break;
+        }
+        return true;
     }
 
     @Override
