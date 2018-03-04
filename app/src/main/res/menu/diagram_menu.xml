@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/diagram_menu_change_item"
+        android:icon="@drawable/icon_renew"
+        android:iconTint="@color/colorAccent"
+        android:title="Change"
+        app:showAsAction="ifRoom"/>
+</menu>

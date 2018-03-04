@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -23,7 +25,6 @@ import app.and.cashtracker.adapters.RecordsListCursorAdapter;
 import app.and.cashtracker.database.DBHelper;
 
 public class JournalActivity extends AppCompatActivity {
-    private ImageButton mDiagramButton;
     private Button mDateStartButton, mDateEndButton;
     private ListView mListView;
     private RecordsListCursorAdapter mAdapter;
@@ -53,7 +54,6 @@ public class JournalActivity extends AppCompatActivity {
     }
 
     private void initializeView(){
-        mDiagramButton = findViewById(R.id.journal_diagram_button);
         mDateStartButton = findViewById(R.id.journal_date_start_button);
         mDateEndButton = findViewById(R.id.journal_date_end_button);
         mListView = findViewById(R.id.journal_list_view);
@@ -70,16 +70,6 @@ public class JournalActivity extends AppCompatActivity {
         mListView.setAdapter(mAdapter);
     }
     private void initializeListeners(){
-        mDiagramButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(JournalActivity.this, DiagramActivity.class);
-                Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),view.getHeight(),Bitmap.Config.ARGB_8888);
-                bitmap.eraseColor(getResources().getColor(R.color.colorPrimary));
-                Bundle bundle = ActivityOptions.makeThumbnailScaleUpAnimation(view,bitmap,0,0).toBundle();
-                startActivity(intent,bundle);
-            }
-        });
         mDateStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -119,6 +109,32 @@ public class JournalActivity extends AppCompatActivity {
     private void updateAdapter(){
         mAdapter.swapCursor(DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),
                 DBHelper.SDF.format(dateStart), DBHelper.SDF.format(dateEnd)));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.journal_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId=item.getItemId();
+        View view = findViewById(itemId);
+        switch (itemId){
+            case R.id.journal_menu_diagram_item:
+                onDiagramItemClick(view);
+                break;
+        }
+        return true;
+    }
+
+    private void onDiagramItemClick(View view) {
+        Intent intent = new Intent(JournalActivity.this, DiagramActivity.class);
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(getResources().getColor(R.color.colorPrimary));
+        Bundle bundle = ActivityOptions.makeThumbnailScaleUpAnimation(view, bitmap, 0, 0).toBundle();
+        startActivity(intent, bundle);
     }
 
     @Override
