@@ -1,5 +1,7 @@
 package app.and.cashtracker.adapters;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
@@ -93,6 +95,18 @@ public class RecordsListCursorAdapter extends CursorAdapter {
                                                     swapCursor(DBHelper.getRecordsCursorByDates(DBHelper.getInstance(context),dateStart,dateEnd));
                                                     Intent intent1 = new Intent("UPDATE_DATA");
                                                     context.sendBroadcast(intent1);
+                                                    // animation
+//                                                    view.animate()
+//                                                            .translationX(-view.getWidth())
+//                                                            .setDuration(200)
+//                                                            .setListener(new AnimatorListenerAdapter() {
+//                                                                @Override
+//                                                                public void onAnimationEnd(Animator animation) {
+//                                                                    swapCursor(DBHelper.getRecordsCursorByDates(DBHelper.getInstance(context),dateStart,dateEnd));
+//                                                                    Intent intent1 = new Intent("UPDATE_DATA");
+//                                                                    context.sendBroadcast(intent1);
+//                                                                }
+//                                                            });
                                                 }
                                             }
                                         })

@@ -2,7 +2,10 @@ package app.and.cashtracker;
 
 import android.app.ActivityOptions;
 import android.app.DatePickerDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +28,7 @@ public class JournalActivity extends AppCompatActivity {
     private ListView mListView;
     private RecordsListCursorAdapter mAdapter;
     private Date dateStart, dateEnd;
+    private BroadcastReceiver mReciever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,15 @@ public class JournalActivity extends AppCompatActivity {
         initializeData();
         initializeListeners();
 
+        mReciever = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                mListView.refreshDrawableState();
+//                mListView.setVisibility(View.GONE);
+//                mListView.setVisibility(View.VISIBLE);
+            }
+        };
+        registerReceiver(mReciever, new IntentFilter("UPDATE_DATA"));
     }
 
     private void initializeView(){
@@ -116,6 +129,7 @@ public class JournalActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
+        unregisterReceiver(mReciever);
         setResult(1);
         overridePendingTransition(0, R.anim.activity_journal_zoom_out);
     }
