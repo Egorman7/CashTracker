@@ -24,7 +24,7 @@ import app.and.cashtracker.models.RecordModel;
 public class AddActivity extends AppCompatActivity {
 
     private Spinner mCategorySpinner;
-    private ImageButton mCategorySettingsButton;
+    private ImageButton mCategorySettingsButton, mCalculatorButton;
     private Button mButton;
     private TextInputEditText mValue, mDate;
     private RadioButton mRadioInc, mRadioOut;
@@ -84,6 +84,7 @@ public class AddActivity extends AppCompatActivity {
         mRadioOut = findViewById(R.id.add_radio_outcome);
         mCategorySettingsButton = findViewById(R.id.add_category_config_button);
         mButton = findViewById(R.id.add_button);
+        mCalculatorButton = findViewById(R.id.add_calculator);
     }
     private void initializeData(){
         mCategorySpinner.setPrompt("Категория");
@@ -144,11 +145,26 @@ public class AddActivity extends AppCompatActivity {
                 } catch (Exception ex){ ex.printStackTrace();}
             }
         });
+        mCalculatorButton.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AddActivity.this, CalculatorActivity.class);
+                String res = mValue.getText().toString();
+                if(res.isEmpty()) res = "0";
+                intent.putExtra("value", Double.valueOf(res));
+                Bundle b = ActivityOptions.makeScaleUpAnimation(view,(int)view.getX(), (int)view.getY(),view.getWidth(), view.getHeight()).toBundle();
+                startActivityForResult(intent,2,b);
+            }
+        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        setUpCategoriesSpinner();
+        switch (requestCode){
+            case 1: setUpCategoriesSpinner(); break;
+            case 2: mValue.setText(data.getStringExtra("result"));
+        }
     }
 
     @Override

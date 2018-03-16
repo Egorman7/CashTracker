@@ -19,10 +19,6 @@
     <string name="title_activity_category">Категории</string>
     <string name="add_color_text">Цвет:</string>
     <string name="create_category_hint">Имя категории</string>
-    <string name="title_activity_category_tabbed">CategoryTabbedActivity</string>
-    <string name="section_format">Hello World from section: %1$d</string>
-    <string name="appwidget_text">EXAMPLE</string>
-    <string name="configure">Configure</string>
-    <string name="add_widget">Add widget</string>
     <string name="title_activity_more">MoreActivity</string>
+    <string name="title_activity_calculator">Калькулятор</string>
 </resources>

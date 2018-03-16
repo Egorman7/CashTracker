@@ -16,4 +16,11 @@
     <color name="cat_entertainment_color">#6ACB2A</color>
     <color name="cat_transport_color">#2A80CB</color>
     <color name="cat_salary_color">#09940E</color>
+
+    <!-- calculator colors -->
+    <color name="calc_c">#ff7700</color>
+    <color name="calc_op">#004fff</color>
+    <color name="calc_dig">#111111</color>
+    <color name="calc_eq">#771111</color>
+    <color name="calc_ok">#117711</color>
 </resources>
