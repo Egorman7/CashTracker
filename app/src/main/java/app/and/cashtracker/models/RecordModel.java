@@ -10,22 +10,25 @@ public class RecordModel {
     double value;
     Date date;
     String category;
+    String desc;
     boolean income;
     int id;
 
-    public RecordModel(double value, Date date, String category, boolean income) {
+    public RecordModel(double value, Date date, String category, boolean income, String desc) {
         this.value = value;
         this.date = date;
         this.category = category;
         this.income = income;
+        this.desc=desc;
     }
 
-    public RecordModel(double value, Date date, String category, boolean income, int id) {
+    public RecordModel(double value, Date date, String category, boolean income, String desc, int id) {
         this.value = value;
         this.date = date;
         this.category = category;
         this.income = income;
         this.id = id;
+        this.desc=desc;
     }
 
     public int getId() {
@@ -46,5 +49,9 @@ public class RecordModel {
 
     public String getCategory() {
         return category;
+    }
+
+    public String getDesc() {
+        return desc;
     }
 }

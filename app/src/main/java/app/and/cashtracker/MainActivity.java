@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView mListView;
     private RecordsListCursorAdapter mAdapter;
     private TextView mDates, mIncome, mOutcome, mValue;
-    private CardView mCard;
+    private CardView mCard, mDescHolder;
 
     private String startDate, endDate;
     private BroadcastReceiver mReciever;
@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         mValue = findViewById(R.id.main_balance);
         mListView = findViewById(R.id.main_list_view);
         mCard = findViewById(R.id.main_card);
+        mDescHolder = findViewById(R.id.desc_holder_card);
     }
     private void initializeData(){
         endDate = DBHelper.SDF.format(Calendar.getInstance().getTime());
@@ -81,7 +82,9 @@ public class MainActivity extends AppCompatActivity {
 
         updateInfoCard();
 
-        mAdapter = new RecordsListCursorAdapter(this, DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),startDate, endDate),startDate,endDate);
+        mDescHolder.setVisibility(View.GONE);
+
+        mAdapter = new RecordsListCursorAdapter(this, DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),startDate, endDate),startDate,endDate, mDescHolder);
         mListView.setAdapter(mAdapter);
     }
     private void initializeListeners(){

@@ -30,7 +30,7 @@ public class DBHelper extends SQLiteOpenHelper{
     TABLE_RECORDS = "records", TABLE_CURRENT = "current";
     // field names
     public static final String CAT_ID="_id", CAT_NAME="name", CAT_COLOR="color", CAT_INCOME = "income",
-    REC_ID="_id", REC_VALUE="value", REC_DATE="date", REC_INCOME="income", REC_CAT="cat",
+    REC_ID="_id", REC_VALUE="value", REC_DATE="date", REC_INCOME="income", REC_CAT="cat", REC_DESC = "desc",
     CUR_ID="_id", CUR_VALUE="value";
 
     public static SimpleDateFormat SDF = new SimpleDateFormat(DBHelper.DATE_FORMAT);
@@ -48,7 +48,8 @@ public class DBHelper extends SQLiteOpenHelper{
             REC_VALUE + " decimal, " +
             REC_DATE + " date, " +
             REC_INCOME + " boolean, " +
-            REC_CAT + " integer references "+TABLE_CATEGORY+"("+CAT_ID+"));";
+            REC_CAT + " integer references "+TABLE_CATEGORY+"("+CAT_ID+"), " +
+            REC_DESC + "text);";
     private static final String CUR_CREATE_TABLE = "create table " +
             TABLE_CURRENT+" (" +
             CUR_ID + " integer primary key autoincrement, " +
@@ -92,7 +93,7 @@ public class DBHelper extends SQLiteOpenHelper{
     }
 
     private DBHelper(Context context){
-        super(context,DB_NAME,null,1);
+        super(context,DB_NAME,null,2);
         this.context=context;
     }
 
@@ -109,8 +110,12 @@ public class DBHelper extends SQLiteOpenHelper{
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldV, int newV) {
+        switch (newV){
+            case 2:
+                sqLiteDatabase.execSQL("alter table " + TABLE_RECORDS + " add column '" + REC_DESC + "' text default ''");
+                break;
+        }
     }
 
     // get data methods
@@ -318,6 +323,7 @@ public class DBHelper extends SQLiteOpenHelper{
         cv.put(REC_DATE, SDF.format(rm.getDate()));
         cv.put(REC_CAT, catId);
         cv.put(REC_INCOME, rm.isIncome() ? 1 : 0);
+        cv.put(REC_DESC, rm.getDesc());
         if(database.update(TABLE_RECORDS,cv,REC_ID + " = " + rm.getId(),null) > 0){
             database.close();
             return true;
@@ -395,6 +401,7 @@ public class DBHelper extends SQLiteOpenHelper{
         cv.put(REC_DATE, SDF.format(recordModel.getDate()));
         cv.put(REC_INCOME, recordModel.isIncome());
         cv.put(REC_CAT, catId);
+        cv.put(REC_DESC, recordModel.getDesc());
         if(database.insert(TABLE_RECORDS,null,cv)!=0){
             database.close();
             return true;

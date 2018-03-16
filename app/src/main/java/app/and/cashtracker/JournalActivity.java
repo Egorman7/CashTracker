@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,7 @@ public class JournalActivity extends AppCompatActivity {
     private RecordsListCursorAdapter mAdapter;
     private Date dateStart, dateEnd;
     private BroadcastReceiver mReciever;
+    private CardView mDescHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,7 @@ public class JournalActivity extends AppCompatActivity {
         mDateStartButton = findViewById(R.id.journal_date_start_button);
         mDateEndButton = findViewById(R.id.journal_date_end_button);
         mListView = findViewById(R.id.journal_list_view);
+        mDescHolder = findViewById(R.id.desc_holder_card);
     }
     private void initializeData(){
         Calendar cal = Calendar.getInstance();
@@ -66,8 +69,9 @@ public class JournalActivity extends AppCompatActivity {
         mDateStartButton.setText(DBHelper.SDF.format(dateStart));
         mDateEndButton.setText(DBHelper.SDF.format(dateEnd));
         mAdapter = new RecordsListCursorAdapter(this,DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),
-                DBHelper.SDF.format(dateStart), DBHelper.SDF.format(dateEnd)), DBHelper.SDF.format(dateStart),DBHelper.SDF.format(dateEnd));
+                DBHelper.SDF.format(dateStart), DBHelper.SDF.format(dateEnd)), DBHelper.SDF.format(dateStart),DBHelper.SDF.format(dateEnd), findViewById(R.id.desc_holder_card));
         mListView.setAdapter(mAdapter);
+        mDescHolder.setVisibility(View.GONE);
     }
     private void initializeListeners(){
         mDateStartButton.setOnClickListener(new View.OnClickListener() {

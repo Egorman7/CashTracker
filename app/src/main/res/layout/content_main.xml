@@ -112,4 +112,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:orientation="vertical"/>
 
+    <include layout="@layout/description_holder"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
 </android.support.constraint.ConstraintLayout>

@@ -26,7 +26,7 @@ public class AddActivity extends AppCompatActivity {
     private Spinner mCategorySpinner;
     private ImageButton mCategorySettingsButton, mCalculatorButton;
     private Button mButton;
-    private TextInputEditText mValue, mDate;
+    private TextInputEditText mValue, mDate, mDesc;
     private RadioButton mRadioInc, mRadioOut;
     private boolean isIncome, isEdit, isWasIncome;
     private double oldValue;
@@ -47,16 +47,18 @@ public class AddActivity extends AppCompatActivity {
         initializeListeners();
 
         double val;
-        String date, cat;
+        String date, cat, desc;
         isEdit = getIntent().getBooleanExtra("edit",false);
         if(isEdit){
             val=getIntent().getDoubleExtra("value",0);
             date=getIntent().getStringExtra("date");
             cat=getIntent().getStringExtra("cat");
+            desc=getIntent().getStringExtra("desc");
             id=getIntent().getIntExtra("id",0);
             mButton.setText("Изменить");
             mValue.setText(String.valueOf(val));
             mDate.setText(date);
+            mDesc.setText(desc);
             oldValue = val;
             isWasIncome = getIntent().getBooleanExtra("income",false);
             if(isWasIncome){
@@ -80,6 +82,7 @@ public class AddActivity extends AppCompatActivity {
         mCategorySpinner =  findViewById(R.id.add_category_spinner);
         mValue = findViewById(R.id.add_input_value);
         mDate = findViewById(R.id.add_input_date);
+        mDesc = findViewById(R.id.add_desc);
         mRadioInc = findViewById(R.id.add_radio_income);
         mRadioOut = findViewById(R.id.add_radio_outcome);
         mCategorySettingsButton = findViewById(R.id.add_category_config_button);
@@ -121,7 +124,8 @@ public class AddActivity extends AppCompatActivity {
                 try {
                     if (!isEdit && DBHelper.addRecord(DBHelper.getInstance(AddActivity.this), new RecordModel(Double.valueOf(mValue.getText().toString()),
                             DBHelper.SDF.parse(mDate.getText().toString()),
-                            mCategorySpinner.getSelectedItem().toString(), mRadioInc.isChecked()
+                            mCategorySpinner.getSelectedItem().toString(), mRadioInc.isChecked(),
+                            mDesc.getText().toString()
                     ), isIncome)){
                         if(DBHelper.addBalance(DBHelper.getInstance(AddActivity.this),Double.valueOf(
                                 (mRadioInc.isChecked() ? "" : "-")+
@@ -133,7 +137,7 @@ public class AddActivity extends AppCompatActivity {
                                 Double.valueOf(mValue.getText().toString()),
                                 DBHelper.SDF.parse(mDate.getText().toString()),
                                 mCategorySpinner.getSelectedItem().toString(),
-                                mRadioInc.isChecked(), id
+                                mRadioInc.isChecked(), mDesc.getText().toString(), id
                         ))){
                             if(DBHelper.addBalance(DBHelper.getInstance(AddActivity.this),Double.valueOf((isWasIncome ? "-" : "") +oldValue)) &&
                                     DBHelper.addBalance(DBHelper.getInstance(AddActivity.this),
