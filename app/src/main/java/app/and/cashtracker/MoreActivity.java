@@ -41,5 +41,4 @@ public class MoreActivity extends AppCompatActivity {
                 getIntent().getStringExtra("cat")),
                 getIntent().getBooleanExtra("income",false)));
     }
-
 }

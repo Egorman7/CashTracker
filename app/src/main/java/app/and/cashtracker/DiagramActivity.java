@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +34,7 @@ import app.and.cashtracker.database.DBHelper;
 public class DiagramActivity extends AppCompatActivity {
     private AnimatedPieView mChartOutcome, mChartIncome;
     private CardView mCard;
-    private ImageButton /*mButton,*/ mCardButton;
+    private ImageButton mCardButton;
     private TextView mTextView, mSumInfo, mCardText;
     private boolean isIncome, isCardShowing;
     private AnimatedPieViewConfig configOutcome, configIncome;
@@ -92,7 +93,6 @@ public class DiagramActivity extends AppCompatActivity {
         configIncome.setOnPieSelectListener(new OnPieSelectListener<IPieInfo>() {
             @Override
             public void onSelectPie(@NonNull IPieInfo pieInfo, boolean isScaleUp) {
-                //if(isScaleUp) Toast.makeText(getApplicationContext(),pieInfo.getDesc() + ": " + pieInfo.getValue() + " UAH", Toast.LENGTH_SHORT).show();
                 if(isScaleUp){
                     selectedCat = pieInfo.getDesc();
                     selectedValue = ": " + new DecimalFormat("#.00 UAH",DecimalFormatSymbols.getInstance(Locale.US)).format(pieInfo.getValue());
@@ -120,7 +120,6 @@ public class DiagramActivity extends AppCompatActivity {
         configOutcome.setOnPieSelectListener(new OnPieSelectListener<IPieInfo>() {
             @Override
             public void onSelectPie(@NonNull IPieInfo pieInfo, boolean isScaleUp) {
-                //if(isScaleUp) Toast.makeText(getApplicationContext(),pieInfo.getDesc() + ": " + pieInfo.getValue() + " UAH", Toast.LENGTH_SHORT).show();
                 if(isScaleUp){
                     selectedCat = pieInfo.getDesc();
                     selectedValue = ": " + new DecimalFormat("#.00 UAH",DecimalFormatSymbols.getInstance(Locale.US)).format(pieInfo.getValue());
@@ -138,6 +137,8 @@ public class DiagramActivity extends AppCompatActivity {
         mSumInfo.setText(df.format(valueOut));
         mSumInfo.setAlpha(0f);
         mSumInfo.animate().alpha(1f).setDuration(1200).setListener(null);
+        mCard.setVisibility(View.VISIBLE);
+        mCard.setTranslationY(300);
     }
     private void initializeListeners(){
         mCardButton.setOnClickListener(new View.OnClickListener() {
@@ -175,8 +176,6 @@ public class DiagramActivity extends AppCompatActivity {
         } else{
             isCardShowing=true;
             updateCard();
-            mCard.setVisibility(View.VISIBLE);
-            mCard.setTranslationY(300);
             mCard.animate()
                     .translationY(0f)
                     .setDuration(600)
@@ -184,26 +183,32 @@ public class DiagramActivity extends AppCompatActivity {
         }
     }
     private void hideCard(){
-        if(isCardShowing){
-            mCard.animate()
-                    .translationY(mCard.getHeight())
-                    .setDuration(600)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            isCardShowing=false;
-                        }
-                    });
-        }
+        mCard.animate()
+                .translationY(mCard.getHeight())
+                .setDuration(600)
+                .setListener(null);
+        isCardShowing=false;
     }
     private void updateCard(){
-        mCardText.setText(selectedCat+selectedValue);
+        mCardText.animate()
+                .setDuration(100)
+                .alpha(0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mCardText.setText(selectedCat+selectedValue);
+                        mCardText.animate()
+                                .setDuration(100)
+                                .alpha(1)
+                                .setListener(null);
+                    }
+                });
     }
-    private void onChangeItemClick(View view){
+    private void onChangeItemClick(){
+        if (isCardShowing) hideCard();
         isIncome = !isIncome;
         if(isIncome){
             mTextView.setText("Доходы (" + dateStart + " - " + dateEnd+")");
-            //mChartOutcome.applyConfig(configIncome);
             mChartOutcome.setVisibility(View.GONE);
             mChartIncome.setVisibility(View.VISIBLE);
             mChartIncome.start();
@@ -214,9 +219,7 @@ public class DiagramActivity extends AppCompatActivity {
             mChartOutcome.setVisibility(View.VISIBLE);
             mChartOutcome.start();
             fadeInOutSumLable(valueOut);
-            //mChartOutcome.applyConfig(configOutcome);
         }
-        //mChartOutcome.start();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -230,15 +233,10 @@ public class DiagramActivity extends AppCompatActivity {
         View view = findViewById(itemId);
         switch (itemId){
             case R.id.diagram_menu_change_item:
-                onChangeItemClick(view);
+                if(item.getIcon() instanceof Animatable) ((Animatable)item.getIcon()).start();
+                onChangeItemClick();
                 break;
         }
         return true;
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(0,R.anim.activity_journal_zoom_out);
     }
 }

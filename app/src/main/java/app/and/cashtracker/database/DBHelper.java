@@ -25,13 +25,14 @@ public class DBHelper extends SQLiteOpenHelper{
     private Context context;
 
     public static final String DB_NAME = "cashtrackerdb";
+    private static final int DB_VERSION = 4;
     // table names
     public static final String TABLE_CATEGORY = "categories",
     TABLE_RECORDS = "records", TABLE_CURRENT = "current";
     // field names
     public static final String CAT_ID="_id", CAT_NAME="name", CAT_COLOR="color", CAT_INCOME = "income",
     REC_ID="_id", REC_VALUE="value", REC_DATE="date", REC_INCOME="income", REC_CAT="cat", REC_DESC = "desc",
-    CUR_ID="_id", CUR_VALUE="value";
+    CUR_ID="_id", CUR_VALUE="value", CUR_PIN = "pin", CUR_NOTF = "notf", CUR_PERIOD = "period";
 
     public static SimpleDateFormat SDF = new SimpleDateFormat(DBHelper.DATE_FORMAT);
 
@@ -53,7 +54,10 @@ public class DBHelper extends SQLiteOpenHelper{
     private static final String CUR_CREATE_TABLE = "create table " +
             TABLE_CURRENT+" (" +
             CUR_ID + " integer primary key autoincrement, " +
-            CUR_VALUE + " decimal);";
+            CUR_VALUE + " decimal, " +
+            CUR_PIN + " text, " +
+            CUR_NOTF + "boolean, " +
+            CUR_PERIOD + "integer);";
 
     // fill default data
     private static final String[] CAT_COLORS = {
@@ -93,7 +97,7 @@ public class DBHelper extends SQLiteOpenHelper{
     }
 
     private DBHelper(Context context){
-        super(context,DB_NAME,null,2);
+        super(context,DB_NAME,null,DB_VERSION);
         this.context=context;
     }
 
@@ -111,10 +115,17 @@ public class DBHelper extends SQLiteOpenHelper{
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldV, int newV) {
-        switch (newV){
-            case 2:
+        switch (oldV){
+            case 1:
                 sqLiteDatabase.execSQL("alter table " + TABLE_RECORDS + " add column '" + REC_DESC + "' text default ''");
-                break;
+                Log.d("DB_UPGRADE", "Upgrading from 1 to 2");
+            case 2:
+                sqLiteDatabase.execSQL("alter table " + TABLE_CURRENT + " add column '" + CUR_PIN + "' text default ''");
+                sqLiteDatabase.execSQL("alter table " + TABLE_CURRENT + " add column '" + CUR_NOTF + "' boolean default 1");
+                sqLiteDatabase.execSQL("alter table " + TABLE_CURRENT + " add column '" + CUR_PERIOD + "' integer default 30");
+                Log.d("DB_UPGRADE", "Upgrading from 2 to 3");
+            case 3:
+                Log.d("DB_UPGRADE", "Upgrading from 3 to 4");
         }
     }
 

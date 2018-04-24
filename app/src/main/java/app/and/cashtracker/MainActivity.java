@@ -10,6 +10,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
@@ -18,7 +23,11 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -35,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private RecordsListCursorAdapter mAdapter;
     private TextView mDates, mIncome, mOutcome, mValue;
     private CardView mCard, mDescHolder;
+    private NavigationView mNavigation;
+    private ActionBarDrawerToggle mDrawerToogle;
+    private DrawerLayout mDrawerLayout;
 
     private String startDate, endDate;
     private BroadcastReceiver mReciever;
@@ -49,10 +61,29 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //deleteDatabase(DBHelper.DB_NAME);
-
+        // kek
+        // !!!!!!!!!!!!!!!!!! change this shit!
+/*
+        SharedPreferences preferences = getSharedPreferences("PREFS", 0);
+        boolean isNoFirst = preferences.getBoolean("nofirst", false);
+        if(!isNoFirst){
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("nofirst", true);
+            editor.putBoolean("pin", false);
+            editor.apply();
+            Intent intent = new Intent(this,)
+            startActivityForResult(new Intent(this,PinActivity.class),3);
+        } else {
+            if(preferences.getBoolean("pin", false)){
+                startActivityForResult(new Intent(this,PinActivity.class),4);
+            }
+        }*/
+        // !!!!!
         initializeView();
         initializeData();
         initializeListeners();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mReciever = new BroadcastReceiver() {
             @Override
@@ -72,6 +103,10 @@ public class MainActivity extends AppCompatActivity {
         mListView = findViewById(R.id.main_list_view);
         mCard = findViewById(R.id.main_card);
         mDescHolder = findViewById(R.id.desc_holder_card);
+        mNavigation = findViewById(R.id.main_navigation);
+        //mDrawerList = findViewById(R.id.main_drawer_list);
+        mDrawerLayout = findViewById(R.id.main_drawer_layout);
+        mDrawerToogle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_closer);
     }
     private void initializeData(){
         endDate = DBHelper.SDF.format(Calendar.getInstance().getTime());
@@ -86,6 +121,12 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter = new RecordsListCursorAdapter(this, DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),startDate, endDate),startDate,endDate, mDescHolder);
         mListView.setAdapter(mAdapter);
+
+        /*String[] data = {"1 Неделя", "2 Недели", "Месяц"};
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, data);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mDrawerList.setAdapter(spinnerAdapter);
+        mDrawerList.setSelection(0);*/
     }
     private void initializeListeners(){
         mCard.setOnLongClickListener(new View.OnLongClickListener() {
@@ -113,6 +154,34 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+        mDrawerLayout.setDrawerListener(mDrawerToogle);
+        mDrawerToogle.syncState();
+        mNavigation.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intent;
+                switch (item.getItemId()){
+                    case R.id.main_drawer_item_1:
+                        intent = new Intent(MainActivity.this, JournalActivity.class);
+                        startActivityForResult(intent,1);
+                        break;
+                    case R.id.main_drawer_item_2:
+                        intent = new Intent(MainActivity.this, DiagramActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.main_drawer_item_3:
+                        // intent = new Intent(MainActivity.this, ChartActivity.class);
+                        // startActivity(intent);
+                        break;
+                    case R.id.main_drawer_item_4:
+                        // intent = new Intent(MainActivity.this, SettingsActivity.class);
+                        // startActivityForResult(intent, 2);
+                        break;
+                }
+                mDrawerLayout.closeDrawers();
+                return true;
+            }
+        });
     }
 
     private void updateInfoCard(){
@@ -122,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
         mOutcome.setText("-"+df.format(DBHelper.getValuesSumForDates(DBHelper.getInstance(this),startDate, endDate, false)));
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -130,14 +200,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if(mDrawerToogle.onOptionsItemSelected(item)) return true;
         int itemId=item.getItemId();
         View view = findViewById(itemId);
         switch (itemId){
             case R.id.main_menu_add_item:
                 onAddItemClick(view);
-                break;
-            case R.id.main_menu_journal_item:
-                onJournalItemClick(view);
                 break;
         }
         return true;
@@ -151,15 +219,6 @@ public class MainActivity extends AppCompatActivity {
         bitmap.eraseColor(getResources().getColor(R.color.colorPrimary));
         Bundle bundle = ActivityOptions.makeThumbnailScaleUpAnimation(view, bitmap, 0, 0).toBundle();
         startActivityForResult(intent, 1, bundle);
-    }
-
-    @SuppressLint("RestrictedApi")
-    private void onJournalItemClick(View view) {
-        Intent intent = new Intent(MainActivity.this, JournalActivity.class);
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),view.getHeight(),Bitmap.Config.ARGB_8888);
-        bitmap.eraseColor(getResources().getColor(R.color.colorPrimary));
-        Bundle bundle = ActivityOptions.makeThumbnailScaleUpAnimation(view,bitmap,0,0).toBundle();
-        startActivityForResult(intent,1,bundle);
     }
 
     @Override

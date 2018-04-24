@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.util.Calendar;
@@ -43,6 +42,7 @@ public class JournalActivity extends AppCompatActivity {
         initializeView();
         initializeData();
         initializeListeners();
+
 
         mReciever = new BroadcastReceiver() {
             @Override
@@ -116,32 +116,6 @@ public class JournalActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.journal_menu,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId=item.getItemId();
-        View view = findViewById(itemId);
-        switch (itemId){
-            case R.id.journal_menu_diagram_item:
-                onDiagramItemClick(view);
-                break;
-        }
-        return true;
-    }
-
-    private void onDiagramItemClick(View view) {
-        Intent intent = new Intent(JournalActivity.this, DiagramActivity.class);
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        bitmap.eraseColor(getResources().getColor(R.color.colorPrimary));
-        Bundle bundle = ActivityOptions.makeThumbnailScaleUpAnimation(view, bitmap, 0, 0).toBundle();
-        startActivity(intent, bundle);
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         updateAdapter();
     }
@@ -151,6 +125,5 @@ public class JournalActivity extends AppCompatActivity {
         super.finish();
         unregisterReceiver(mReciever);
         setResult(1);
-        overridePendingTransition(0, R.anim.activity_journal_zoom_out);
     }
 }

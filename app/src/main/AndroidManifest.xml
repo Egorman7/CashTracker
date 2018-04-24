@@ -42,7 +42,8 @@
         <activity
             android:name=".CalculatorActivity"
             android:label="@string/title_activity_calculator"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".PinActivity"></activity>
     </application>
 
 </manifest>

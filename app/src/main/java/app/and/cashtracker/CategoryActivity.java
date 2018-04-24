@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
@@ -122,6 +123,7 @@ public class CategoryActivity extends AppCompatActivity {
         View view = findViewById(itemId);
         switch (itemId){
             case R.id.categories_change_item:
+                if(item.getIcon() instanceof Animatable) ((Animatable)item.getIcon()).start();
                 onChangeItemClick(view);
                 break;
         }

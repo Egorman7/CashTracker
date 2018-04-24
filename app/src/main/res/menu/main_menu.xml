@@ -6,12 +6,6 @@
         android:id="@+id/main_menu_add_item"
         android:icon="@drawable/icon_plus_circle"
         android:iconTint="@color/colorAccent"
-        android:title="Add"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/main_menu_journal_item"
-        android:icon="@drawable/icon_list"
-        android:iconTint="@color/colorAccent"
-        android:title="Journal"
+        android:title="Добавить"
         app:showAsAction="ifRoom"/>
 </menu>

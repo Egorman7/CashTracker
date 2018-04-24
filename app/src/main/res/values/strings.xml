@@ -22,4 +22,6 @@
     <string name="create_category_hint">Имя категории</string>
     <string name="title_activity_more">MoreActivity</string>
     <string name="title_activity_calculator">Калькулятор</string>
+    <string name="drawer_open">Drawer Opened</string>
+    <string name="drawer_closer">Drawer Closed</string>
 </resources>

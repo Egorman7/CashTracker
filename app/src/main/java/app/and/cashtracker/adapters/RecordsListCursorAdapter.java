@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +29,6 @@ import java.util.Locale;
 import app.and.cashtracker.AddActivity;
 import app.and.cashtracker.R;
 import app.and.cashtracker.database.DBHelper;
-import app.and.cashtracker.listeners.OnSwipeTouchListener;
 
 /**
  * Created by Egorman on 05.02.2018.
