@@ -43,7 +43,11 @@
             android:name=".CalculatorActivity"
             android:label="@string/title_activity_calculator"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".PinActivity"></activity>
+        <activity android:name=".PinActivity" />
+        <activity
+            android:name=".ChartActivity"
+            android:label="@string/title_activity_chart"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

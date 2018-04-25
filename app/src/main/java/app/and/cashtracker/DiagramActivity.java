@@ -3,6 +3,7 @@ package app.and.cashtracker;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,12 +33,14 @@ import java.util.Locale;
 import java.util.Map;
 
 import app.and.cashtracker.database.DBHelper;
+import app.and.cashtracker.database.Data;
 
 public class DiagramActivity extends AppCompatActivity {
     private AnimatedPieView mChartOutcome, mChartIncome;
     private CardView mCard;
     private ImageButton mCardButton;
     private TextView mTextView, mSumInfo, mCardText;
+    private Button mDateStart, mDateEnd;
     private boolean isIncome, isCardShowing;
     private AnimatedPieViewConfig configOutcome, configIncome;
     private String dateEnd, dateStart, selectedCat, selectedValue;
@@ -49,16 +54,14 @@ public class DiagramActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         isIncome = false; isCardShowing = false;
-        dateEnd = DBHelper.SDF.format(Calendar.getInstance().getTime());
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_YEAR,-14);
-        dateStart = DBHelper.SDF.format(cal.getTime());
+        dateEnd = Data.getCurrentDate();
+        dateStart = Data.getCurrentDateSub(14,0);
 
         valueInc = valueOut = 0.0;
 
         initializeView();
-        initializeOutcomeConfig();
-        initializeIncomeConfig();
+        initializeOutcomeConfig(dateStart, dateEnd);
+        initializeIncomeConfig(dateStart, dateEnd);
         initializeData();
         initializeListeners();
 
@@ -72,15 +75,17 @@ public class DiagramActivity extends AppCompatActivity {
         mCard = findViewById(R.id.diagram_info_card);
         mCardText = findViewById(R.id.diagram_info_card_text);
         mCardButton = findViewById(R.id.diagram_info_card_button);
+        mDateStart = findViewById(R.id.diagram_date_start);
+        mDateEnd = findViewById(R.id.diagram_date_end);
     }
-    private void initializeIncomeConfig(){
+    private void initializeIncomeConfig(String dateStart, String dateEnd){
        // Map<String, Float> dataMap = DBHelper.getValuesForCategoriesByDates(DBHelper.getInstance(this),dateStart,dateEnd,true);
         Map<String, Float> dataMap = DBHelper.getValuesForCat(DBHelper.getInstance(this),dateStart,dateEnd,true);
         configIncome = new AnimatedPieViewConfig();
         String[] keys = dataMap.keySet().toArray(new String[dataMap.size()]);
         for (int i=0; i<keys.length; i++){
             if(dataMap.get(keys[i])>0){
-                configIncome.addData(new SimplePieInfo(dataMap.get(keys[i]),DBHelper.getCategoryColor(DBHelper.getInstance(this),keys[i]),keys[i]));
+                configIncome.addData(new SimplePieInfo(dataMap.get(keys[i]),DBHelper.getCategoryColor(DBHelper.getInstance(this),keys[i], true),keys[i]));
                 valueInc += dataMap.get(keys[i]);
             }
         }
@@ -101,14 +106,14 @@ public class DiagramActivity extends AppCompatActivity {
             }
         });
     }
-    private void initializeOutcomeConfig(){
+    private void initializeOutcomeConfig(String dateStart, String dateEnd){
         //Map<String, Float> dataMap = DBHelper.getValuesForCategoriesByDates(DBHelper.getInstance(this),dateStart,dateEnd,false);
         Map<String, Float> dataMap = DBHelper.getValuesForCat(DBHelper.getInstance(this),dateStart,dateEnd,false);
         configOutcome = new AnimatedPieViewConfig();
         String[] keys = dataMap.keySet().toArray(new String[dataMap.size()]);
         for(int i=0; i<keys.length; i++){
             if(dataMap.get(keys[i])>0)
-                configOutcome.addData(new SimplePieInfo(dataMap.get(keys[i]),DBHelper.getCategoryColor(DBHelper.getInstance(this),keys[i]),keys[i]));
+                configOutcome.addData(new SimplePieInfo(dataMap.get(keys[i]),DBHelper.getCategoryColor(DBHelper.getInstance(this),keys[i], false),keys[i]));
                 valueOut += dataMap.get(keys[i]);
         }
         configOutcome.setStartAngle(-90);
@@ -132,13 +137,14 @@ public class DiagramActivity extends AppCompatActivity {
         mChartOutcome.applyConfig(configOutcome);
         mChartOutcome.start();
         mChartIncome.applyConfig(configIncome);
-        mTextView.setText("Расходы (" + dateStart + " - " + dateEnd+")");
+        mTextView.setText("Расходы"); //(" + dateStart + " - " + dateEnd+")");
         DecimalFormat df = new DecimalFormat("#.00 UAH", DecimalFormatSymbols.getInstance(Locale.US));
         mSumInfo.setText(df.format(valueOut));
         mSumInfo.setAlpha(0f);
         mSumInfo.animate().alpha(1f).setDuration(1200).setListener(null);
         mCard.setVisibility(View.VISIBLE);
         mCard.setTranslationY(300);
+        mDateStart.setText(dateStart); mDateEnd.setText(dateEnd);
     }
     private void initializeListeners(){
         mCardButton.setOnClickListener(new View.OnClickListener() {
@@ -152,8 +158,58 @@ public class DiagramActivity extends AppCompatActivity {
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(DiagramActivity.this,mCardText,"titlemore").toBundle());
             }
         });
+        mDateStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(Data.getSDF().parse(dateStart));
+                    new DatePickerDialog(DiagramActivity.this, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                            Calendar c = Calendar.getInstance();
+                            c.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                            updateDiagramData(Data.getSDF().format(c.getTime()), dateEnd);
+                        }
+                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+                } catch (Exception ex) {ex.printStackTrace();}
+            }
+        });
+        mDateEnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(Data.getSDF().parse(dateEnd));
+                    new DatePickerDialog(DiagramActivity.this, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                            Calendar c = Calendar.getInstance();
+                            c.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                            updateDiagramData(dateStart, Data.getSDF().format(c.getTime()));
+                        }
+                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+                } catch (Exception ex) {ex.printStackTrace();}
+            }
+        });
     }
-
+    private void updateDiagramData(String dateStart, String dateEnd){
+        valueInc = valueOut = 0.0;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        initializeIncomeConfig(dateStart, dateEnd);
+        initializeOutcomeConfig(dateStart, dateEnd);
+        mChartIncome.applyConfig(configIncome);
+        mChartOutcome.applyConfig(configOutcome);
+        mDateStart.setText(dateStart); mDateEnd.setText(dateEnd);
+        if(isIncome) {
+            mChartIncome.start();
+            fadeInOutSumLable(valueInc);
+        } else {
+            mChartOutcome.start();
+            fadeInOutSumLable(valueOut);
+        }
+    }
     private void fadeInOutSumLable(final double value){
         final DecimalFormat df = new DecimalFormat("#.00 UAH", DecimalFormatSymbols.getInstance(Locale.US));
         mSumInfo.animate()
@@ -208,13 +264,13 @@ public class DiagramActivity extends AppCompatActivity {
         if (isCardShowing) hideCard();
         isIncome = !isIncome;
         if(isIncome){
-            mTextView.setText("Доходы (" + dateStart + " - " + dateEnd+")");
+            mTextView.setText("Доходы"); //(" + dateStart + " - " + dateEnd+")");
             mChartOutcome.setVisibility(View.GONE);
             mChartIncome.setVisibility(View.VISIBLE);
             mChartIncome.start();
             fadeInOutSumLable(valueInc);
         } else {
-            mTextView.setText("Расходы (" + dateStart + " - " + dateEnd+")");
+            mTextView.setText("Расходы");
             mChartIncome.setVisibility(View.GONE);
             mChartOutcome.setVisibility(View.VISIBLE);
             mChartOutcome.start();

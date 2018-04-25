@@ -15,6 +15,7 @@ import java.util.Locale;
 
 import app.and.cashtracker.R;
 import app.and.cashtracker.database.DBHelper;
+import app.and.cashtracker.database.Data;
 
 /**
  * Created by Egorman on 04.03.2018.
@@ -36,7 +37,8 @@ public class MoreListCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         TextView dateView = view.findViewById(R.id.more_list_date);
         TextView valueView = view.findViewById(R.id.more_list_value);
-        dateView.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.REC_DATE)));
+        String date = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.REC_DATE));
+        dateView.setText(date + " " + Data.getDayName(date));
         valueView.setText((income ? "" : "-")+new DecimalFormat("#.00 UAH", DecimalFormatSymbols.getInstance(Locale.US)).format(cursor.getDouble(cursor.getColumnIndexOrThrow("sum"))));
         valueView.setTextColor(ContextCompat.getColor(context,income ? R.color.incomeColor : R.color.outcomeColor));
     }

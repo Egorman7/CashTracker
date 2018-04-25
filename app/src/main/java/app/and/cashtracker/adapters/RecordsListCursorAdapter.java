@@ -29,6 +29,7 @@ import java.util.Locale;
 import app.and.cashtracker.AddActivity;
 import app.and.cashtracker.R;
 import app.and.cashtracker.database.DBHelper;
+import app.and.cashtracker.database.Data;
 
 /**
  * Created by Egorman on 05.02.2018.
@@ -183,7 +184,7 @@ public class RecordsListCursorAdapter extends CursorAdapter {
                 }
             }
         });
-        dateView.setText(date);
+        dateView.setText(date + " " + Data.getDayName(date));
         catView.setText(cat);
         if(!income){
             valueView.setText("-" + value);

@@ -23,12 +23,13 @@ import java.util.Date;
 
 import app.and.cashtracker.adapters.RecordsListCursorAdapter;
 import app.and.cashtracker.database.DBHelper;
+import app.and.cashtracker.database.Data;
 
 public class JournalActivity extends AppCompatActivity {
     private Button mDateStartButton, mDateEndButton;
     private ListView mListView;
     private RecordsListCursorAdapter mAdapter;
-    private Date dateStart, dateEnd;
+    private String dateStart, dateEnd;
     private BroadcastReceiver mReciever;
     private CardView mDescHolder;
 
@@ -64,12 +65,12 @@ public class JournalActivity extends AppCompatActivity {
     private void initializeData(){
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_YEAR,-14);
-        dateStart = cal.getTime();
-        dateEnd = Calendar.getInstance().getTime();
-        mDateStartButton.setText(DBHelper.SDF.format(dateStart));
-        mDateEndButton.setText(DBHelper.SDF.format(dateEnd));
+        dateStart = Data.getCurrentDateSub(14,0);
+        dateEnd = Data.getCurrentDate();
+        mDateStartButton.setText(dateStart);
+        mDateEndButton.setText(dateEnd);
         mAdapter = new RecordsListCursorAdapter(this,DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),
-                DBHelper.SDF.format(dateStart), DBHelper.SDF.format(dateEnd)), DBHelper.SDF.format(dateStart),DBHelper.SDF.format(dateEnd), findViewById(R.id.desc_holder_card));
+                dateStart, dateEnd), dateStart, dateEnd, findViewById(R.id.desc_holder_card));
         mListView.setAdapter(mAdapter);
         mDescHolder.setVisibility(View.GONE);
     }
@@ -77,35 +78,41 @@ public class JournalActivity extends AppCompatActivity {
         mDateStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatePickerDialog dpd = new DatePickerDialog(JournalActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-                        Calendar cal = Calendar.getInstance();
-                        cal.set(datePicker.getYear(),datePicker.getMonth(),datePicker.getDayOfMonth());
-                        Date date = cal.getTime();
-                        dateStart =date;
-                        mDateStartButton.setText(DBHelper.SDF.format(date));
-                        updateAdapter();
-                    }
-                }, Calendar.getInstance().get(Calendar.YEAR),Calendar.getInstance().get(Calendar.MONTH),Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-                dpd.show();
+                try {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(Data.getSDF().parse(dateStart));
+                    new DatePickerDialog(JournalActivity.this, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                            Calendar cal = Calendar.getInstance();
+                            cal.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                            Date date = cal.getTime();
+                            dateStart = Data.getSDF().format(date);
+                            mDateStartButton.setText(dateStart);
+                            updateAdapter();
+                        }
+                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+                } catch (Exception ex) {ex.printStackTrace();}
             }
         });
         mDateEndButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatePickerDialog dpd = new DatePickerDialog(JournalActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-                        Calendar cal = Calendar.getInstance();
-                        cal.set(datePicker.getYear(),datePicker.getMonth(),datePicker.getDayOfMonth());
-                        Date date = cal.getTime();
-                        dateEnd =date;
-                        mDateEndButton.setText(DBHelper.SDF.format(date));
-                        updateAdapter();
-                    }
-                }, Calendar.getInstance().get(Calendar.YEAR),Calendar.getInstance().get(Calendar.MONTH),Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-                dpd.show();
+                try {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(Data.getSDF().parse(dateEnd));
+                    new DatePickerDialog(JournalActivity.this, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                            Calendar cal = Calendar.getInstance();
+                            cal.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                            Date date = cal.getTime();
+                            dateEnd = Data.getSDF().format(date);
+                            mDateEndButton.setText(dateEnd);
+                            updateAdapter();
+                        }
+                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+                } catch (Exception ex) {ex.printStackTrace();}
             }
         });
     }

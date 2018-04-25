@@ -248,9 +248,10 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return map;
     }
-    public static int getCategoryColor(DBHelper dbHelper, String category){
+    public static int getCategoryColor(DBHelper dbHelper, String category, boolean income){
         SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("select " + CAT_COLOR + " from " + TABLE_CATEGORY + " where " + CAT_NAME + " = '" + category +"';",null);
+        String inc = income ? "1" : "0";
+        Cursor cursor = database.rawQuery("select " + CAT_COLOR + " from " + TABLE_CATEGORY + " where " + CAT_NAME + " = '" + category +"' and "+ CAT_INCOME + " = " + inc+";",null);
         int color=0;
         if(cursor.moveToFirst()){
             color = cursor.getInt(cursor.getColumnIndexOrThrow(CAT_COLOR));
@@ -278,6 +279,39 @@ public class DBHelper extends SQLiteOpenHelper{
         database.close();
         cursor.close();
         return f;
+    }
+    public static Map<String, Double> getDataForChart(Context context, String category, String dateStart, String dateEnd, boolean income){
+        int id = getCategoryIdByName(DBHelper.getInstance(context),category, income);
+        //String inc = income ? "1" : "0";
+        Map<String, Double> data = new HashMap<>();
+        SQLiteDatabase database = DBHelper.getInstance(context).getReadableDatabase();
+        Cursor cursor = database.rawQuery("select " + REC_DATE + ", sum(" + REC_VALUE +") as sum from " + TABLE_RECORDS +
+            " where " + REC_DATE + " >= '" + dateStart + "' and " + REC_DATE +" <= '" + dateEnd + "' and " + REC_CAT + " = " + id +
+            " group by " + REC_DATE + " order by " + REC_DATE + " desc;", null);
+        if(cursor.moveToFirst()){
+            do{
+                data.put(cursor.getString(cursor.getColumnIndexOrThrow(REC_DATE)), cursor.getDouble(cursor.getColumnIndexOrThrow("sum")));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        database.close();
+        return data;
+    }
+    public static Map<String, Double> getAllData(Context context, String dateStart, String dateEnd, boolean income){
+        Map<String, Double> data = new HashMap<>();
+        String inc = income ? "1" : "0";
+        SQLiteDatabase database = DBHelper.getInstance(context).getReadableDatabase();
+        Cursor cursor = database.rawQuery("select " + REC_DATE + ", sum(" + REC_VALUE +") as sum from " + TABLE_RECORDS +
+                " where " + REC_DATE + " <= '" + dateEnd + "' and " + REC_DATE + " >= '" + dateStart +"' and " + REC_INCOME + " = " + inc +
+                " group by " + REC_DATE + " order by " + REC_DATE + " desc;", null);
+        if(cursor.moveToFirst()){
+            do{
+                data.put(cursor.getString(cursor.getColumnIndexOrThrow(REC_DATE)), cursor.getDouble(cursor.getColumnIndexOrThrow("sum")));
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        database.close();
+        return data;
     }
 
 

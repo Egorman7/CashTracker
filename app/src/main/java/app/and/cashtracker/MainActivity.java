@@ -37,6 +37,7 @@ import java.util.Locale;
 
 import app.and.cashtracker.adapters.RecordsListCursorAdapter;
 import app.and.cashtracker.database.DBHelper;
+import app.and.cashtracker.database.Data;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -109,10 +110,8 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToogle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_closer);
     }
     private void initializeData(){
-        endDate = DBHelper.SDF.format(Calendar.getInstance().getTime());
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, -14);
-        startDate = DBHelper.SDF.format(calendar.getTime());
+        endDate = Data.getCurrentDate();
+        startDate = Data.getCurrentDateSub(14,0);
         mDates.setText(startDate + "  -  " + endDate);
 
         updateInfoCard();
@@ -170,8 +169,8 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                         break;
                     case R.id.main_drawer_item_3:
-                        // intent = new Intent(MainActivity.this, ChartActivity.class);
-                        // startActivity(intent);
+                        intent = new Intent(MainActivity.this, ChartActivity.class);
+                        startActivity(intent);
                         break;
                     case R.id.main_drawer_item_4:
                         // intent = new Intent(MainActivity.this, SettingsActivity.class);

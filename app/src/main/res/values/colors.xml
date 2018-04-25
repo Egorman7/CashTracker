@@ -11,11 +11,6 @@
     <color name="white">#fff</color>
 
     <!-- category colors -->
-    <color name="cat_other_color">#777474</color>
-    <color name="cat_food_color">#E4B312</color>
-    <color name="cat_entertainment_color">#6ACB2A</color>
-    <color name="cat_transport_color">#2A80CB</color>
-    <color name="cat_salary_color">#09940E</color>
 
     <!-- calculator colors -->
     <color name="calc_c">#ff7700</color>
