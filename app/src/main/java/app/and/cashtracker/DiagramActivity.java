@@ -34,6 +34,7 @@ import java.util.Map;
 
 import app.and.cashtracker.database.DBHelper;
 import app.and.cashtracker.database.Data;
+import app.and.cashtracker.system.Settings;
 
 public class DiagramActivity extends AppCompatActivity {
     private AnimatedPieView mChartOutcome, mChartIncome;
@@ -45,6 +46,7 @@ public class DiagramActivity extends AppCompatActivity {
     private AnimatedPieViewConfig configOutcome, configIncome;
     private String dateEnd, dateStart, selectedCat, selectedValue;
     private double valueInc, valueOut;
+    private Settings settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class DiagramActivity extends AppCompatActivity {
         dateStart = Data.getCurrentDateSub(14,0);
 
         valueInc = valueOut = 0.0;
+        settings = new Settings(this);
 
         initializeView();
         initializeOutcomeConfig(dateStart, dateEnd);
@@ -100,7 +103,7 @@ public class DiagramActivity extends AppCompatActivity {
             public void onSelectPie(@NonNull IPieInfo pieInfo, boolean isScaleUp) {
                 if(isScaleUp){
                     selectedCat = pieInfo.getDesc();
-                    selectedValue = ": " + new DecimalFormat("#.00 UAH",DecimalFormatSymbols.getInstance(Locale.US)).format(pieInfo.getValue());
+                    selectedValue = ": " + new DecimalFormat("#.00 "+settings.getCurrency(),DecimalFormatSymbols.getInstance(Locale.US)).format(pieInfo.getValue());
                     showCard();
                 } else hideCard();
             }
@@ -127,7 +130,7 @@ public class DiagramActivity extends AppCompatActivity {
             public void onSelectPie(@NonNull IPieInfo pieInfo, boolean isScaleUp) {
                 if(isScaleUp){
                     selectedCat = pieInfo.getDesc();
-                    selectedValue = ": " + new DecimalFormat("#.00 UAH",DecimalFormatSymbols.getInstance(Locale.US)).format(pieInfo.getValue());
+                    selectedValue = ": " + new DecimalFormat("#.00 "+settings.getCurrency(),DecimalFormatSymbols.getInstance(Locale.US)).format(pieInfo.getValue());
                     showCard();
                 } else hideCard();
             }
@@ -211,7 +214,7 @@ public class DiagramActivity extends AppCompatActivity {
         }
     }
     private void fadeInOutSumLable(final double value){
-        final DecimalFormat df = new DecimalFormat("#.00 UAH", DecimalFormatSymbols.getInstance(Locale.US));
+        final DecimalFormat df = new DecimalFormat("#.00 "+settings.getCurrency(), DecimalFormatSymbols.getInstance(Locale.US));
         mSumInfo.animate()
                 .alpha(0f)
                 .setDuration(600)

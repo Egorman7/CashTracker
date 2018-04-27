@@ -16,6 +16,7 @@ import java.util.Locale;
 import app.and.cashtracker.R;
 import app.and.cashtracker.database.DBHelper;
 import app.and.cashtracker.database.Data;
+import app.and.cashtracker.system.Settings;
 
 /**
  * Created by Egorman on 04.03.2018.
@@ -23,8 +24,10 @@ import app.and.cashtracker.database.Data;
 
 public class MoreListCursorAdapter extends CursorAdapter {
     private boolean income;
+    private Settings settings;
     public MoreListCursorAdapter(Context context, Cursor cursor, boolean income){
         super(context,cursor,0);
+        settings = new Settings(context);
         this.income=income;
     }
 
@@ -39,7 +42,7 @@ public class MoreListCursorAdapter extends CursorAdapter {
         TextView valueView = view.findViewById(R.id.more_list_value);
         String date = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.REC_DATE));
         dateView.setText(date + " " + Data.getDayName(date));
-        valueView.setText((income ? "" : "-")+new DecimalFormat("#.00 UAH", DecimalFormatSymbols.getInstance(Locale.US)).format(cursor.getDouble(cursor.getColumnIndexOrThrow("sum"))));
+        valueView.setText((income ? "" : "-")+new DecimalFormat("#.00 "+settings.getCurrency(), DecimalFormatSymbols.getInstance(Locale.US)).format(cursor.getDouble(cursor.getColumnIndexOrThrow("sum"))));
         valueView.setTextColor(ContextCompat.getColor(context,income ? R.color.incomeColor : R.color.outcomeColor));
     }
 }

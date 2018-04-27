@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -30,6 +31,8 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.hotmail.or_dvir.easysettings.pojos.EasySettings;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
@@ -38,6 +41,7 @@ import java.util.Locale;
 import app.and.cashtracker.adapters.RecordsListCursorAdapter;
 import app.and.cashtracker.database.DBHelper;
 import app.and.cashtracker.database.Data;
+import app.and.cashtracker.system.Settings;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private String startDate, endDate;
     private BroadcastReceiver mReciever;
 
+    private Settings settings;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
@@ -61,25 +67,16 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        settings = new Settings(this);
+        //EasySettings.retrieveSettingsSharedPrefs(this).edit().putBoolean(Settings.KEY_PIN,false).apply();
+
         //deleteDatabase(DBHelper.DB_NAME);
-        // kek
-        // !!!!!!!!!!!!!!!!!! change this shit!
-/*
-        SharedPreferences preferences = getSharedPreferences("PREFS", 0);
-        boolean isNoFirst = preferences.getBoolean("nofirst", false);
-        if(!isNoFirst){
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean("nofirst", true);
-            editor.putBoolean("pin", false);
-            editor.apply();
-            Intent intent = new Intent(this,)
+
+        SharedPreferences preferences = EasySettings.retrieveSettingsSharedPrefs(this);
+        if(preferences.getBoolean(Settings.KEY_PIN, false)){
             startActivityForResult(new Intent(this,PinActivity.class),3);
-        } else {
-            if(preferences.getBoolean("pin", false)){
-                startActivityForResult(new Intent(this,PinActivity.class),4);
-            }
-        }*/
-        // !!!!!
+        }
+
         initializeView();
         initializeData();
         initializeListeners();
@@ -105,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
         mCard = findViewById(R.id.main_card);
         mDescHolder = findViewById(R.id.desc_holder_card);
         mNavigation = findViewById(R.id.main_navigation);
-        //mDrawerList = findViewById(R.id.main_drawer_list);
         mDrawerLayout = findViewById(R.id.main_drawer_layout);
         mDrawerToogle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_closer);
     }
@@ -120,12 +116,6 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter = new RecordsListCursorAdapter(this, DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),startDate, endDate),startDate,endDate, mDescHolder);
         mListView.setAdapter(mAdapter);
-
-        /*String[] data = {"1 Неделя", "2 Недели", "Месяц"};
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, data);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mDrawerList.setAdapter(spinnerAdapter);
-        mDrawerList.setSelection(0);*/
     }
     private void initializeListeners(){
         mCard.setOnLongClickListener(new View.OnLongClickListener() {
@@ -173,8 +163,8 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                         break;
                     case R.id.main_drawer_item_4:
-                        // intent = new Intent(MainActivity.this, SettingsActivity.class);
-                        // startActivityForResult(intent, 2);
+                        intent = new Intent(MainActivity.this, SettingsActivity.class);
+                        startActivityForResult(intent, 2);
                         break;
                 }
                 mDrawerLayout.closeDrawers();
@@ -184,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateInfoCard(){
-        DecimalFormat df = new DecimalFormat("#.00 UAH", DecimalFormatSymbols.getInstance(Locale.US));
+        DecimalFormat df = new DecimalFormat("#.00 "+settings.getCurrency(), DecimalFormatSymbols.getInstance(Locale.US));
         mValue.setText(df.format(DBHelper.getBalance(DBHelper.getInstance(this))));
         mIncome.setText(df.format(DBHelper.getValuesSumForDates(DBHelper.getInstance(this),startDate, endDate, true)));
         mOutcome.setText("-"+df.format(DBHelper.getValuesSumForDates(DBHelper.getInstance(this),startDate, endDate, false)));

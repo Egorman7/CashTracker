@@ -10,7 +10,7 @@ import java.util.Date;
 // в этом классе плюшки для подсчета календаря и прочей шняги
 public class Data {
     private final static String[] dayNames = {"","Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"};
-    public static final String[] PERIOD = {"1 Неделя", "2 Недели", "Месяц"};
+    public static final String[] PERIOD = {"1 неделя", "2 недели", "Месяц"};
     private static SimpleDateFormat SDF;
     public static SimpleDateFormat getSDF(){
         if(SDF==null) SDF = new SimpleDateFormat(DBHelper.DATE_FORMAT);

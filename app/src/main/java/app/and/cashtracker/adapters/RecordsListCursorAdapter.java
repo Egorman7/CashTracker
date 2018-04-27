@@ -30,6 +30,7 @@ import app.and.cashtracker.AddActivity;
 import app.and.cashtracker.R;
 import app.and.cashtracker.database.DBHelper;
 import app.and.cashtracker.database.Data;
+import app.and.cashtracker.system.Settings;
 
 /**
  * Created by Egorman on 05.02.2018.
@@ -40,11 +41,13 @@ public class RecordsListCursorAdapter extends CursorAdapter {
     private String dateStart, dateEnd;
     private View descHolder, lastClickedItem;
     private boolean isDescHolderShowing;
+    private Settings settings;
     public RecordsListCursorAdapter(Context context, Cursor cursor, String dateStart, String dateEnd, final View descHolder){
         super(context,cursor,0);
         this.dateStart=dateStart;
         this.dateEnd=dateEnd;
         this.descHolder = descHolder;
+        settings = new Settings(context);
         isDescHolderShowing = false;
         descHolder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,7 +74,7 @@ public class RecordsListCursorAdapter extends CursorAdapter {
         final CardView cardView = view.findViewById(R.id.info_card);
         final int id = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.REC_ID));
         final double val = cursor.getDouble(cursor.getColumnIndexOrThrow(DBHelper.REC_VALUE));
-        DecimalFormat df = new DecimalFormat("#.00 UAH", DecimalFormatSymbols.getInstance(Locale.US));
+        DecimalFormat df = new DecimalFormat("#.00 "+settings.getCurrency(), DecimalFormatSymbols.getInstance(Locale.US));
         final String value = df.format(val),
                 date = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.REC_DATE)),
                 desc = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.REC_DESC)),
@@ -112,18 +115,6 @@ public class RecordsListCursorAdapter extends CursorAdapter {
                                                     swapCursor(DBHelper.getRecordsCursorByDates(DBHelper.getInstance(context),dateStart,dateEnd));
                                                     Intent intent1 = new Intent("UPDATE_DATA");
                                                     context.sendBroadcast(intent1);
-                                                    // animation
-//                                                    view.animate()
-//                                                            .translationX(-view.getWidth())
-//                                                            .setDuration(200)
-//                                                            .setListener(new AnimatorListenerAdapter() {
-//                                                                @Override
-//                                                                public void onAnimationEnd(Animator animation) {
-//                                                                    swapCursor(DBHelper.getRecordsCursorByDates(DBHelper.getInstance(context),dateStart,dateEnd));
-//                                                                    Intent intent1 = new Intent("UPDATE_DATA");
-//                                                                    context.sendBroadcast(intent1);
-//                                                                }
-//                                                            });
                                                 }
                                             }
                                         })

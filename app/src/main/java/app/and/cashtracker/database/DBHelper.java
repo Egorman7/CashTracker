@@ -313,6 +313,15 @@ public class DBHelper extends SQLiteOpenHelper{
         database.close();
         return data;
     }
+    public static String getPin(Context context){
+        SQLiteDatabase database = DBHelper.getInstance(context).getReadableDatabase();
+        Cursor cursor = database.rawQuery("select " + CUR_PIN +" from " + TABLE_CURRENT, null);
+        String res = "";
+        if(cursor.moveToFirst()) res = cursor.getString(cursor.getColumnIndexOrThrow(CUR_PIN));
+        cursor.close();
+        database.close();
+        return res;
+    }
 
 
 
@@ -467,6 +476,17 @@ public class DBHelper extends SQLiteOpenHelper{
             database.close();
             return flag;
         } catch (Exception ex){ex.printStackTrace();}
+        return false;
+    }
+    public static boolean setPin(Context context, String pin){
+        try{
+            SQLiteDatabase database = getInstance(context).getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(CUR_PIN, pin);
+            boolean flag = database.update(TABLE_CURRENT, cv, CUR_ID + " = 1", null) > 0;
+            database.close();
+            return flag;
+        } catch (Exception ex) {ex.printStackTrace();}
         return false;
     }
 }

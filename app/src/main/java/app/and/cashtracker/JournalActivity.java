@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -119,7 +120,7 @@ public class JournalActivity extends AppCompatActivity {
 
     private void updateAdapter(){
         mAdapter.swapCursor(DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),
-                DBHelper.SDF.format(dateStart), DBHelper.SDF.format(dateEnd)));
+                dateStart, dateEnd));
     }
 
     @Override
