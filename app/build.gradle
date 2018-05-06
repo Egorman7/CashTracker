@@ -33,4 +33,5 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     implementation 'com.github.or-dvir:EasySettings:1.1.1'
     implementation 'com.github.or-dvir.EasySettings:easysettings-dialogs:1.1.1'
+    implementation 'com.github.halysongoncalves:pugnotification:1.8.1'
 }

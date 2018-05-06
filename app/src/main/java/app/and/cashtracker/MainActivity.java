@@ -12,9 +12,9 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -24,39 +24,40 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.hotmail.or_dvir.easysettings.pojos.EasySettings;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Calendar;
 import java.util.Locale;
 
 import app.and.cashtracker.adapters.RecordsListCursorAdapter;
 import app.and.cashtracker.database.DBHelper;
 import app.and.cashtracker.database.Data;
 import app.and.cashtracker.system.Settings;
+import app.and.cashtracker.system.service.NotificationService;
 
 public class MainActivity extends AppCompatActivity {
 
     private ListView mListView;
     private RecordsListCursorAdapter mAdapter;
-    private TextView mDates, mIncome, mOutcome, mValue;
+    private TextView mIncome, mOutcome, mValue;
+    private TextView mDateStart, mDateEnd;
     private CardView mCard, mDescHolder;
     private NavigationView mNavigation;
     private ActionBarDrawerToggle mDrawerToogle;
     private DrawerLayout mDrawerLayout;
 
-    private String startDate, endDate;
+    private String dateStart, dateEnd;
     private BroadcastReceiver mReciever;
 
     private Settings settings;
+
+    private static final int REQUEST_ADD=1, REQUEST_JOURNAL=2, REQUEST_PIN=3, REQUEST_SETTINGS =4;
+    public static final String DATE_START = "dateStart", DATE_END = "dateEnd";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,12 +70,15 @@ public class MainActivity extends AppCompatActivity {
 
         settings = new Settings(this);
         //EasySettings.retrieveSettingsSharedPrefs(this).edit().putBoolean(Settings.KEY_PIN,false).apply();
+//        Intent service = new Intent(this, NotificationService.class);
+//        stopService(service);
+//        startService(service);
 
         //deleteDatabase(DBHelper.DB_NAME);
 
         SharedPreferences preferences = EasySettings.retrieveSettingsSharedPrefs(this);
         if(preferences.getBoolean(Settings.KEY_PIN, false)){
-            startActivityForResult(new Intent(this,PinActivity.class),3);
+            startActivityForResult(new Intent(this,PinActivity.class),REQUEST_PIN);
         }
 
         initializeView();
@@ -87,14 +91,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 updateInfoCard();
-                //mAdapter.swapCursor(DBHelper.getRecordsCursorByDates(DBHelper.getInstance(MainActivity.this),startDate,endDate));
+                //mAdapter.swapCursor(DBHelper.getRecordsCursorByDates(DBHelper.getInstance(MainActivity.this),dateStart,endDate));
             }
         };
         registerReceiver(mReciever,new IntentFilter("UPDATE_DATA"));
     }
 
     private void initializeView(){
-        mDates = findViewById(R.id.main_dates_info);
+        mDateStart = findViewById(R.id.main_date_start);
+        mDateEnd = findViewById(R.id.main_date_end);
         mIncome = findViewById(R.id.main_income);
         mOutcome = findViewById(R.id.main_outcome);
         mValue = findViewById(R.id.main_balance);
@@ -106,15 +111,15 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToogle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_closer);
     }
     private void initializeData(){
-        endDate = Data.getCurrentDate();
-        startDate = Data.getCurrentDateSub(14,0);
-        mDates.setText(startDate + "  -  " + endDate);
+        dateEnd = Data.getCurrentDate();
+        dateStart = Data.getDateMinusPeriod(settings.getPeriod());
+        mDateStart.setText(dateStart); mDateEnd.setText(dateEnd);
 
         updateInfoCard();
 
         mDescHolder.setVisibility(View.GONE);
 
-        mAdapter = new RecordsListCursorAdapter(this, DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),startDate, endDate),startDate,endDate, mDescHolder);
+        mAdapter = new RecordsListCursorAdapter(this, DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this), dateStart, dateEnd), dateStart,dateEnd, mDescHolder);
         mListView.setAdapter(mAdapter);
     }
     private void initializeListeners(){
@@ -152,19 +157,25 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()){
                     case R.id.main_drawer_item_1:
                         intent = new Intent(MainActivity.this, JournalActivity.class);
-                        startActivityForResult(intent,1);
+                        intent.putExtra(DATE_START, dateStart);
+                        intent.putExtra(DATE_END, dateEnd);
+                        startActivityForResult(intent,REQUEST_JOURNAL);
                         break;
                     case R.id.main_drawer_item_2:
                         intent = new Intent(MainActivity.this, DiagramActivity.class);
+                        intent.putExtra(DATE_START, dateStart);
+                        intent.putExtra(DATE_END, dateEnd);
                         startActivity(intent);
                         break;
                     case R.id.main_drawer_item_3:
                         intent = new Intent(MainActivity.this, ChartActivity.class);
+                        intent.putExtra(DATE_START, dateStart);
+                        intent.putExtra(DATE_END, dateEnd);
                         startActivity(intent);
                         break;
                     case R.id.main_drawer_item_4:
                         intent = new Intent(MainActivity.this, SettingsActivity.class);
-                        startActivityForResult(intent, 2);
+                        startActivityForResult(intent, REQUEST_SETTINGS);
                         break;
                 }
                 mDrawerLayout.closeDrawers();
@@ -176,8 +187,8 @@ public class MainActivity extends AppCompatActivity {
     private void updateInfoCard(){
         DecimalFormat df = new DecimalFormat("#.00 "+settings.getCurrency(), DecimalFormatSymbols.getInstance(Locale.US));
         mValue.setText(df.format(DBHelper.getBalance(DBHelper.getInstance(this))));
-        mIncome.setText(df.format(DBHelper.getValuesSumForDates(DBHelper.getInstance(this),startDate, endDate, true)));
-        mOutcome.setText("-"+df.format(DBHelper.getValuesSumForDates(DBHelper.getInstance(this),startDate, endDate, false)));
+        mIncome.setText(df.format(DBHelper.getValuesSumForDates(DBHelper.getInstance(this), dateStart, dateEnd, true)));
+        mOutcome.setText("-"+df.format(DBHelper.getValuesSumForDates(DBHelper.getInstance(this), dateStart, dateEnd, false)));
     }
 
 
@@ -207,13 +218,20 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         bitmap.eraseColor(getResources().getColor(R.color.colorPrimary));
         Bundle bundle = ActivityOptions.makeThumbnailScaleUpAnimation(view, bitmap, 0, 0).toBundle();
-        startActivityForResult(intent, 1, bundle);
+        startActivityForResult(intent, REQUEST_ADD, bundle);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mAdapter.swapCursor(DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),startDate,endDate));
-        updateInfoCard();
+        if(requestCode==REQUEST_SETTINGS){
+            dateEnd = Data.getCurrentDate();
+            dateStart = Data.getDateMinusPeriod(settings.getPeriod());
+            mDateStart.setText(dateStart); mDateEnd.setText(dateEnd);
+        }
+        if(requestCode==REQUEST_ADD || requestCode==REQUEST_JOURNAL || requestCode == REQUEST_SETTINGS){
+            mAdapter.swapCursor(DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this), dateStart,dateEnd));
+            updateInfoCard();
+        }
     }
 
     @Override

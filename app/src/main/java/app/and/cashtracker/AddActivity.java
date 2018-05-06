@@ -36,6 +36,9 @@ public class AddActivity extends AppCompatActivity {
     private int id;
     private ArrayAdapter<String> mAdapter;
 
+    public static final int RESULT_SUCCESS = 1, RESULT_FAIL = 2;
+    private static final int REQUEST_CATEGORIES = 1, REQUEST_CALCULATOR=2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +110,7 @@ public class AddActivity extends AppCompatActivity {
             Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),view.getHeight(),Bitmap.Config.ARGB_8888);
             bitmap.eraseColor(getResources().getColor(R.color.colorPrimary));
             Bundle bundle = ActivityOptions.makeThumbnailScaleUpAnimation(view,bitmap,0,0).toBundle();
-            startActivityForResult(intent, 1, bundle);
+            startActivityForResult(intent, REQUEST_CATEGORIES, bundle);
             }
         });
         mRadioInc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -129,10 +132,10 @@ public class AddActivity extends AppCompatActivity {
                         mCategorySpinner.getSelectedItem().toString(), mRadioInc.isChecked(),
                         mDesc.getText().toString()
                 ), isIncome)){
-                    if(DBHelper.addBalance(DBHelper.getInstance(AddActivity.this),Double.valueOf(
-                            (mRadioInc.isChecked() ? "" : "-")+
-                                    mValue.getText().toString())))
+                    if(DBHelper.addBalance(DBHelper.getInstance(AddActivity.this),Double.valueOf((mRadioInc.isChecked() ? "" : "-")+ mValue.getText().toString()))) {
                         AddActivity.this.finish();
+                        setResult(RESULT_SUCCESS);
+                    }
                 }
                 else {
                     if(DBHelper.updateRecord(DBHelper.getInstance(AddActivity.this),new RecordModel(
@@ -142,10 +145,10 @@ public class AddActivity extends AppCompatActivity {
                             mRadioInc.isChecked(), mDesc.getText().toString(), id
                     ))){
                         if(DBHelper.addBalance(DBHelper.getInstance(AddActivity.this),Double.valueOf((isWasIncome ? "-" : "") +oldValue)) &&
-                                DBHelper.addBalance(DBHelper.getInstance(AddActivity.this),
-                                        Double.valueOf((mRadioInc.isChecked() ? "" : "-") + mValue.getText().toString()))){
-                            AddActivity.this.finish();
-                        }
+                            DBHelper.addBalance(DBHelper.getInstance(AddActivity.this), Double.valueOf((mRadioInc.isChecked() ? "" : "-") + mValue.getText().toString()))){
+                                setResult(RESULT_SUCCESS);
+                                AddActivity.this.finish();
+                            }
                     }
                 }
             } catch (Exception ex){ ex.printStackTrace();}
@@ -160,7 +163,7 @@ public class AddActivity extends AppCompatActivity {
             if(res.isEmpty()) res = "0";
             intent.putExtra("value", Double.valueOf(res));
             Bundle b = ActivityOptions.makeScaleUpAnimation(view,(int)view.getX(), (int)view.getY(),view.getWidth(), view.getHeight()).toBundle();
-            startActivityForResult(intent,2,b);
+            startActivityForResult(intent,REQUEST_CALCULATOR,b);
             }
         });
         mCalendarButton.setOnClickListener(new View.OnClickListener() {
@@ -185,14 +188,20 @@ public class AddActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode){
-            case 1: setUpCategoriesSpinner(); break;
-            case 2: mValue.setText(data.getStringExtra("result"));
+            case REQUEST_CATEGORIES: setUpCategoriesSpinner(); break;
+            case REQUEST_CALCULATOR: mValue.setText(data.getStringExtra("result"));
         }
     }
 
     @Override
+    public void onBackPressed() {
+        setResult(RESULT_FAIL);
+        super.onBackPressed();
+    }
+
+    @Override
     public void finish() {
-        setResult(1);
+        //setResult(1);
         super.finish();
         overridePendingTransition(0, R.anim.activity_add_zoom_out);
     }

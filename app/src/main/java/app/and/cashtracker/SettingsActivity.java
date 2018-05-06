@@ -52,7 +52,7 @@ public class SettingsActivity extends AppCompatActivity {
         settings = new Settings(this);
 
         EasySettings.inflateSettingsLayout(this, container, settings.getSettingsList());
-        SwitchSettingsClickEvent event = new SwitchSettingsClickEvent((SwitchSettingsObject)settings.getSettingsList().get(3));
+        SwitchSettingsClickEvent event = new SwitchSettingsClickEvent((SwitchSettingsObject)EasySettings.findSettingsObject(Settings.KEY_PIN, settings.getSettingsList()));
         pinDefault = EasySettings.retrieveSettingsSharedPrefs(this).getBoolean(Settings.KEY_PIN,false);
         EventBus.getDefault().post(event);
     }

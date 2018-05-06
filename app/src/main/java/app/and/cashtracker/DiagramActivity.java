@@ -56,8 +56,8 @@ public class DiagramActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         isIncome = false; isCardShowing = false;
-        dateEnd = Data.getCurrentDate();
-        dateStart = Data.getCurrentDateSub(14,0);
+        dateEnd = getIntent().getStringExtra(MainActivity.DATE_END);
+        dateStart = getIntent().getStringExtra(MainActivity.DATE_START);
 
         valueInc = valueOut = 0.0;
         settings = new Settings(this);
@@ -141,7 +141,7 @@ public class DiagramActivity extends AppCompatActivity {
         mChartOutcome.start();
         mChartIncome.applyConfig(configIncome);
         mTextView.setText("Расходы"); //(" + dateStart + " - " + dateEnd+")");
-        DecimalFormat df = new DecimalFormat("#.00 UAH", DecimalFormatSymbols.getInstance(Locale.US));
+        DecimalFormat df = new DecimalFormat("#.00 "+settings.getCurrency(), DecimalFormatSymbols.getInstance(Locale.US));
         mSumInfo.setText(df.format(valueOut));
         mSumInfo.setAlpha(0f);
         mSumInfo.animate().alpha(1f).setDuration(1200).setListener(null);

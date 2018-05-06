@@ -64,10 +64,8 @@ public class JournalActivity extends AppCompatActivity {
         mDescHolder = findViewById(R.id.desc_holder_card);
     }
     private void initializeData(){
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_YEAR,-14);
-        dateStart = Data.getCurrentDateSub(14,0);
-        dateEnd = Data.getCurrentDate();
+        dateEnd = getIntent().getStringExtra(MainActivity.DATE_END);
+        dateStart = getIntent().getStringExtra(MainActivity.DATE_START);
         mDateStartButton.setText(dateStart);
         mDateEndButton.setText(dateEnd);
         mAdapter = new RecordsListCursorAdapter(this,DBHelper.getRecordsCursorByDates(DBHelper.getInstance(this),

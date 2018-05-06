@@ -36,7 +36,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toEndOf="@id/journal_from_text"
-                    android:backgroundTint="@color/colorAccent"
                     android:textColor="@color/mainTextColor"
                     android:text="01-01-2018"/>
                 <TextView
@@ -55,7 +54,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toEndOf="@id/journal_to_text"
-                    android:backgroundTint="@color/colorAccent"
                     android:textColor="@color/mainTextColor"
                     android:text="19-01-2018"/>
             </android.support.constraint.ConstraintLayout>

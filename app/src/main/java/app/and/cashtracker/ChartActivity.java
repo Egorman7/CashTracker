@@ -1,5 +1,6 @@
 package app.and.cashtracker;
 
+import android.app.DatePickerDialog;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,11 +9,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
 
 import com.github.mikephil.charting.charts.LineChart;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 
 import app.and.cashtracker.adapters.ChartListAdapter;
 import app.and.cashtracker.database.DBHelper;
@@ -20,9 +25,9 @@ import app.and.cashtracker.database.Data;
 
 public class ChartActivity extends AppCompatActivity {
 
-    private LineChart mMainChart;
     private RecyclerView mRecycler;
     private ChartListAdapter mAdapter;
+    private Button mDateStart, mDateEnd;
 
     private boolean isIncome;
     private String dateStart, dateEnd;
@@ -36,75 +41,68 @@ public class ChartActivity extends AppCompatActivity {
 
         initializeView();
         initializeData();
+        initializeListeners();
     }
 
     private void initializeView(){
-        //mMainChart = findViewById(R.id.chart_main_chart);
+        mDateStart = findViewById(R.id.chart_date_start);
+        mDateEnd = findViewById(R.id.chart_date_end);
         mRecycler = findViewById(R.id.chart_recycler);
     }
     private void initializeData(){
         isIncome = false;
-        dateStart = Data.getCurrentDateSub(14,0);
-        dateEnd = Data.getCurrentDate();
+        dateEnd = getIntent().getStringExtra(MainActivity.DATE_END);
+        dateStart = getIntent().getStringExtra(MainActivity.DATE_START);
+        LinearLayoutManager llm = new LinearLayoutManager(this); llm.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecycler.setLayoutManager(llm);
         setUpList();
-//        String[] categories = DBHelper.getCategories(DBHelper.getInstance(this), isIncome);
-//        final ArrayList<String> dates = Data.getDatesByPeriod(dateStart,dateEnd);
-//        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-//        Log.d("CHARTING...", "Searching in categories...");
-//        for(int i=0; i<categories.length; i++) {
-//            Log.d("CHARTING...", "Category [" + categories[i] + "]");
-//            ArrayList<Entry> entries = new ArrayList<>();
-//            Map<String, Double> data = DBHelper.getDataForChart(this, categories[i], dateStart, dateEnd, isIncome);
-//            Log.d("CHARTING...", "Data from DB got!");
-//            for(String date : data.keySet()){
-//                entries.add(new Entry((float)Data.posDateInDates(date, dates), data.get(date).floatValue()));
-//            }
-//            Log.d("CHARTING...", "Entries filled! Lenght: " + entries.size());
-//            if(entries.size()==0) continue;
-//            Collections.sort(entries, new EntryXComparator());
-//            LineDataSet dataSet = new LineDataSet(entries, categories[i]);
-//            Log.d("CHARTING...", "LineDataSet created!");
-//            dataSet.setDrawIcons(false);
-//            dataSet.setColor(DBHelper.getCategoryColor(DBHelper.getInstance(getApplicationContext()), categories[i], isIncome));
-////            dataSet.setCircleColor(Color.BLACK);
-////            dataSet.setLineWidth(1f);
-////            dataSet.setCircleRadius(2f);
-////            dataSet.setDrawCircleHole(false);
-////            dataSet.setValueTextSize(9f);
-////            dataSet.setDrawFilled(true);
-////            dataSet.setFormLineWidth(1f);
-////            dataSet.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
-////            dataSet.setFormSize(15.f);
-////            dataSet.setFillColor(Color.BLACK);
-//            Log.d("CHARTING...", "Color set!");
-//            dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
-//            dataSets.add(dataSet);
-//            Log.d("CHARTING...", "Data added to DataSets!");
-//        }
-//        IAxisValueFormatter formatter = new IAxisValueFormatter() {
-//            @Override
-//            public String getFormattedValue(float value, AxisBase axis) {
-//                if(value>=0 && value< dates.size()) return dates.get((int)value);
-//                return "NULL";
-//            }
-//        };
-//        Log.d("CHARTING...", "Formatter sut up!");
-//        mMainChart.getXAxis().setGranularity(1f);
-//        mMainChart.getXAxis().setValueFormatter(formatter);
-//        Log.d("CHARTING...", "Formatter applied!");
-//        mMainChart.setData(new LineData(dataSets));
-//        Log.d("CHARTING...", "Data set!");
-//        mMainChart.invalidate();
-//        Log.d("CHARTING...", "Invalidating...");
+    }
+
+    private void initializeListeners(){
+        mDateStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(Data.getSDF().parse(dateStart));
+                    new DatePickerDialog(ChartActivity.this, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                            Calendar c = Calendar.getInstance();
+                            c.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                            dateStart = Data.getSDF().format(c.getTime());
+                            setUpList();
+                        }
+                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+                } catch (Exception ex) {ex.printStackTrace();}
+            }
+        });
+        mDateEnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(Data.getSDF().parse(dateEnd));
+                    new DatePickerDialog(ChartActivity.this, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                            Calendar c = Calendar.getInstance();
+                            c.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                            dateEnd = Data.getSDF().format(c.getTime());
+                            setUpList();
+                        }
+                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+                } catch (Exception ex) {ex.printStackTrace();}
+            }
+        });
     }
 
     private void setUpList(){
+        mDateStart.setText(dateStart); mDateEnd.setText(dateEnd);
         String[] categories = DBHelper.getCategories(DBHelper.getInstance(this), isIncome);
         ArrayList<String> cats = new ArrayList<>(Arrays.asList(categories));
         cats.add(0, ChartListAdapter.ALL_DATA);
         mAdapter = new ChartListAdapter(cats, this, dateStart, dateEnd, isIncome);
-        LinearLayoutManager llm = new LinearLayoutManager(this); llm.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecycler.setLayoutManager(llm);
         mRecycler.setAdapter(mAdapter);
         for(int i=0; i<mAdapter.toDelete.size(); i++){
             mAdapter.getData().remove(mAdapter.toDelete.get(i));

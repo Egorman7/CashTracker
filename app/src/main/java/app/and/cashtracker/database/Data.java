@@ -41,6 +41,9 @@ public class Data {
         else if(value.equals(PERIOD[2])) {array[0]=0; array[1]=1;}
         return array;
     }
+    public static String getDateMinusPeriod(int [] period){
+        return getCurrentDateSub(period[0], period[1]);
+    }
     public static ArrayList<String> getDatesByPeriod(String dateStart, String dateEnd){
         try {
             Log.d("DATES", "GET DATES");

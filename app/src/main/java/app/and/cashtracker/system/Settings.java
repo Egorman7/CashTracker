@@ -33,13 +33,13 @@ public class Settings {
         settings.add(new EditTextSettingsObject.Builder(KEY_CURRENCY, "Название валюты", "UAH", "OK")
                 .setUseValueAsPrefillText().setDialogTitle("Введите валюту").setUseValueAsSummary().build());
         settings.add(new ListSettingsObject.Builder(KEY_PERIOD, "Период","Месяц", periods, "OK")
-                .setUseValueAsSummary().setDialogTitle("Period").build());
+                .setUseValueAsSummary().setDialogTitle("Период").build());
         settings.add(new SwitchSettingsObject.Builder(KEY_PIN, "Пин-код", false)
                 .setSummary("Пин-код для защиты приложения").build());
-        settings.add(new SwitchSettingsObject.Builder(KEY_NOTIFICATIONS, "Опевещения", false)
-                .setSummary("Оповещения в конце каждой недели").build());
-        settings.add(new SwitchSettingsObject.Builder(KEY_FABADD, "Кнопка \'+\'", false)
-                .setOnText("Кнопка внизу справа").setOffText("Кнопка вверху в меню").setUseValueAsSummary().build());
+//        settings.add(new SwitchSettingsObject.Builder(KEY_NOTIFICATIONS, "Опевещения", false)
+//                .setSummary("Оповещения в конце каждой недели").build());
+//        settings.add(new SwitchSettingsObject.Builder(KEY_FABADD, "Кнопка \'+\'", false)
+//                .setOnText("Кнопка внизу справа").setOffText("Кнопка вверху в меню").setUseValueAsSummary().build());
         EasySettings.initializeSettings(context, settings);
     }
 
@@ -49,6 +49,14 @@ public class Settings {
 
     public String getPin() {
         return DBHelper.getPin(context);
+    }
+
+    public boolean getNotifications(){
+        return EasySettings.retrieveSettingsSharedPrefs(context).getBoolean(KEY_NOTIFICATIONS, false);
+    }
+
+    public boolean getAddButton(){
+        return EasySettings.retrieveSettingsSharedPrefs(context).getBoolean(KEY_FABADD,false);
     }
 
     public int[] getPeriod(){
